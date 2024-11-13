@@ -1,9 +1,6 @@
 import { ActionFunctionArgs, LoaderFunction, redirect } from "@remix-run/node";
-import { json, useLoaderData } from "@remix-run/react";
-import { MemberRole } from "~/features/member/types";
+import { useLoaderData } from "@remix-run/react";
 import { authenticator } from "~/utils/auth.server";
-import { prisma } from "~/utils/prisma.server";
-import { getUserSession } from "~/utils/session.server";
 import { getAllWorkspaces, getJoinedWorkspace } from "~/utils/workspace.server";
 import { JoinWorkspaceForm } from "~/workspaces/components/join-workspace";
 
@@ -21,13 +18,15 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const joinedWorkspace = await getJoinedWorkspace(params, request);
 
-  console.log(joinedWorkspace)
+  if (joinedWorkspace) {
+    // Redirect to the index route with the workspace ID
+    return redirect(`/workspaces/${joinedWorkspace[0].id}`);
+  }
 
   return joinedWorkspace;
 };
 
 const JoinWorkspaces = () => {
-  // const workspaceId = useLoaderData();
   const { workspace, workspaceId } = useLoaderData();
 
   return (

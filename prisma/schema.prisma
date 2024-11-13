@@ -21,19 +21,32 @@ model User {
   name      String
   password  String
   workspaces Workspace[] @relation("OwnedWorkspaces")
-  members    Member[]
+  tasks     Tasks[]     @relation("AssignedTasks")  // Corrected here
+  members   Member[]
   createdAt DateTime   @default(now())    
 }
 
 model Workspace {
-  id          Int    @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   name        String
   imageUrl    String
   inviteCode  String
   userId      Int     
-  user        User    @relation(fields: [userId], references: [id], name: "OwnedWorkspaces") 
+  user        User      @relation(fields: [userId], references: [id], name: "OwnedWorkspaces") 
   members     Member[]
-  createdAt   DateTime   @default(now()) 
+  projects    Project[] @relation("WorkspaceProjects")
+  tasks       Tasks[]   @relation("WorkspaceTasks")  // Add the relation name here
+  createdAt   DateTime  @default(now()) 
+}
+
+model Project {
+  id          Int       @id @default(autoincrement())
+  name        String
+  imageUrl    String
+  workspaceId Int       
+  workspace   Workspace @relation("WorkspaceProjects", fields: [workspaceId], references: [id]) 
+  tasks       Tasks[]   // No change needed here
+  createdAt   DateTime  @default(now()) 
 }
 
 model Member {
@@ -46,4 +59,20 @@ model Member {
   
   @@unique([userId, workspaceId]) 
   createdAt DateTime   @default(now())
+}
+
+model Tasks {  
+  id          Int       @id @default(autoincrement())
+  workspaceId Int
+  name        String
+  projectId   Int
+  assigneeId  Int
+  description String? 
+  dueDate     DateTime
+  status      String
+  position    Int
+  createdAt   DateTime  @default(now())
+  project     Project   @relation(fields: [projectId], references: [id])
+  assignee    User      @relation("AssignedTasks", fields: [assigneeId], references: [id])
+  workspace   Workspace @relation("WorkspaceTasks", fields: [workspaceId], references: [id]) // Add the relation here
 }

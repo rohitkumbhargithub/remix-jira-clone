@@ -29,8 +29,8 @@ export const loader = async ({ request }) => {
 
 export const action = async ({ request }: ActionFunctionArgs) => {
     const form = await request.clone().formData();
-    let imageUrl = form.get("img") || null;
-    const name = form.get("name");
+    let imageUrl = form.get("img");
+    const name = form.get("workspaceName");
     const inviteCode = generateInviteCode(6);
     
     if (!name) {
@@ -55,6 +55,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       );
     
       const formData = await parseMultipartFormData(request, uploadHandler);
+      console.log(formData)
       imageUrl = formData.get("img"); 
     } else {
       imageUrl = ""; 

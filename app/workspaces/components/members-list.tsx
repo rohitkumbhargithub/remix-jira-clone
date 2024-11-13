@@ -7,11 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
 import { DottedSperator } from "~/componets/ui/dotted-speartar"
 import { MemberAvatar } from "~/features/member/components/members-avatar"
+import { useWorkspaceId } from "~/hooks/user-workspaceId"
 
 export const MembersList = () => {
     const user = useLoaderData();
+    const { members } = useLoaderData();
     const data = user;
-    const workspaceId = data.workspaceId;
+
+
+    const workspaceId = useWorkspaceId();
     const id = parseInt(workspaceId, 10);
     const currentWorkspaceId = data.workspaceId;
 
@@ -31,7 +35,7 @@ export const MembersList = () => {
             {/* <ConfirmDialog/> */}
             <CardHeader className="flex flex-row items-center gap-x-4 p-7 space-y-0">
                 <Button asChild variant="outline" size="sm">
-                    <Link to={`/workspaces/${id}`}>
+                    <Link to={`/workspaces/${workspaceId}`}>
                     <ArrowLeftIcon className="size-4 mr-2"/>
                     Back
                     </Link>

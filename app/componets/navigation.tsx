@@ -7,7 +7,7 @@ import { useWorkspaceId } from "~/hooks/user-workspaceId";
 const routes = (workspaceId) => [
     {
         label: "Home",
-        href: "/",
+        href: `/workspaces/${workspaceId}`,
         icon: IoHomeOutline,
         activeIcon: IoHomeOutline,
     },

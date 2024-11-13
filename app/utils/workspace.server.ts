@@ -32,6 +32,8 @@ export const createWorkspaces = async (workspace: WorkspaceForm, request: Reques
               inviteCode: workspace.inviteCode,
             },
           });
+
+          
         
           const member = await prisma.member.create({
             data: {
@@ -118,6 +120,10 @@ export const DeleteWorkspace = async(workspaceId: WorkspaceId, request: Request)
     where: { workspaceId: Number(workspaceId) },
   });
 
+  await prisma.project.deleteMany({
+    where: { workspaceId: Number(workspaceId)}
+  })
+
   // Delete the Workspace
   const deleteWorkspace = await prisma.workspace.delete({
     where: { id: Number(workspaceId) },
@@ -136,12 +142,36 @@ export const getAllMemeber = async(request: Request) => {
     where: {
         workspaceId: workspace.id,
     },
+    include:{
+      workspace: true,
+      user: true,
+    }
 
 });
 return members;
 }
 
-export const getJoinedWorkspace = async(params: Params, request: Request) => {
+export const getMemeberByWorkspace = async(request: Request, params: Params) => {
+  const user = await getUserSession(request);
+  const userId = params.userId;
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
+  const workspace = await getAllWorkspaces(request)
+  const members = await prisma.member.findMany({
+    where: {
+        workspaceId: workspace.id,
+        userId: user.id,
+    },
+    include:{
+      workspace: true,
+    }
+
+});
+return members;
+}
+
+export const getJoinedWorkspace = async (params: Params, request: Request) => {
   const user = await getUserSession(request);
   if (!user) {
     return json({ error: "User not authenticated" }, { status: 401 });
@@ -173,12 +203,14 @@ export const getJoinedWorkspace = async(params: Params, request: Request) => {
     return redirect(`/workspaces/${workspaceId}`);
   }
 
+  // Using a transaction to ensure that the user is added to the workspace correctly
   const newMemberData = await prisma.$transaction(async (prisma) => {
+    // Create the new member record
     const newMember = await prisma.member.create({
       data: {
         userId: user.id,
         workspaceId: workspace.id,
-        role: MemberRole.MEMBER,
+        role: MemberRole.MEMBER, // Assuming MemberRole is defined elsewhere
       },
     });
 
@@ -187,11 +219,7 @@ export const getJoinedWorkspace = async(params: Params, request: Request) => {
       where: { id: workspace.id },
       include: {
         user: true,
-        members: {
-          where: {
-            userId: user.id,
-          },
-        },
+        members: true, // Include all members
       },
     });
 
@@ -208,11 +236,11 @@ export const getJoinedWorkspace = async(params: Params, request: Request) => {
   // Update user's session with the new workspace
   const updatedUserSession = {
     ...user,
-    workspaces: [ newMemberData.workspace], // Assuming user.workspaces is an array of workspaces
+    workspaces: Array.isArray(user.workspaces) ? [...user.workspaces, newMemberData.workspace] : [newMemberData.workspace],
   };
 
   const getWorkspaces = (user) => {
-    return user.workspaces.map(({ id, name, imageUrl, inviteCode, createdAt }) => ({
+    return (user.workspaces || []).map(({ id, name, imageUrl, inviteCode, createdAt }) => ({
       id,
       name,
       imageUrl,
@@ -220,11 +248,13 @@ export const getJoinedWorkspace = async(params: Params, request: Request) => {
       createdAt,
     }));
   };
-  
+
   // Usage
   const workspaceData = getWorkspaces(updatedUserSession);
   return workspaceData;
 }
+
+
 
 
 export const ResetCode = async (params: Params, request: Request) => {

@@ -1,9 +1,8 @@
 import { ImageIcon } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
-import { Form, useFetcher, useNavigation } from "@remix-run/react";
+import { Form, useNavigation } from "@remix-run/react";
 import { toast } from "sonner";
-import { ResponsiveModal } from "~/componets/ui/responsive-modal";
-import { cn, generateInviteCode } from "~/lib/utils";
+import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
@@ -77,12 +76,12 @@ export const CreateWorkspaceForm = ({ onCancel, actionUrl }: CreateWorkspaceForm
         <Form method="post" encType="multipart/form-data" action={actionUrl} onSubmit={handleSubmit}>
           <div className="flex flex-col gap-y-6">
             <div>
-              <label htmlFor="name" className="font-bold-sm">
+              <label htmlFor="workspaceName" className="font-bold-sm">
                 Workspace Name
               </label>
               <input
                 type="text"
-                name="name"
+                id="workspaceName" name="workspaceName"
                 placeholder="Enter Workspace Name"
                 value={workspaceName} 
                 onChange={(e) => setWorkspaceName(e.target.value)} 
@@ -159,6 +158,7 @@ export const CreateWorkspaceForm = ({ onCancel, actionUrl }: CreateWorkspaceForm
 
                     <Button
                        type="submit"
+                       name="workspace"
                        size="lg"  
                        disabled={isPending} 
                        

@@ -1,21 +1,18 @@
-// import Image from "next/image"
-import { Link } from "@remix-run/react"
-import { Navigation } from "./navigation"
-import { WorkspaceSwitcher } from "./workspace-switcher"
-// import { DottedSperator } from "./dotted-speator"
+import { Navigation } from "./navigation";
+import { WorkspaceSwitcher } from "./workspace-switcher";
+import { DottedSperator } from "./ui/dotted-speartar";
+import Project from "./project";
 
 export const Sidebar = () => {
+  return (
+   <aside className="fixed top-0 left-0 h-screen bg-neutral-100 p-3 w-72">
+      <h1 className="mb-6">LOGO</h1>
 
-    
-    return (
-        <aside className="h-[35rem] bg-neutral-100 p-5 w-full">
-            <Link to="/">
-                {/* <Image src="https://img.freepik.com/free-vector/bird-colorful-logo-gradient-vector_343694-1365.jpg" alt="logo" width={164} height={48} /> */}
-                <h1>LOGO</h1>
-            </Link>
-            <WorkspaceSwitcher />
-            {/* <DottedSperator/> */}
-            <Navigation />
-        </aside>
-    )
-}
+      <WorkspaceSwitcher />
+      <DottedSperator className="mb-7" />
+      <Navigation />
+      <DottedSperator className="mt-7" />
+      <Project />
+    </aside>
+  );
+};

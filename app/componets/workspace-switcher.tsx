@@ -1,4 +1,4 @@
-import { useLoaderData, useNavigate, useSearchParams } from "@remix-run/react";
+import { redirect, useLoaderData, useNavigate, useSearchParams } from "@remix-run/react";
 import { RiAddCircleFill } from "react-icons/ri";
 import { WorkspaceAvatar } from "~/workspaces/workspace-avatar";
 import {
@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { useWorkspaceId } from "~/hooks/user-workspaceId";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "./modal";
 
 export const WorkspaceSwitcher = () => {
@@ -18,9 +18,15 @@ export const WorkspaceSwitcher = () => {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(workspaceId); // Start with the initial workspaceId if needed
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(workspaceId);
+
+  useEffect(() => {
+    setSelectedWorkspaceId(workspaceId);
+  }, [workspaceId]);
 
   const openModal = () => {
+    // const newUrl = `/workspaces/${workspaceId}`;
+    // window.location.href = newUrl;
     searchParams.set("create-workspace", "true");
     setSearchParams(searchParams);
     setIsModalOpen(true);
@@ -32,8 +38,8 @@ export const WorkspaceSwitcher = () => {
     setSearchParams(searchParams);
   };
 
-  const onSelect = (id) => {
-    setSelectedWorkspaceId(id); // Update the selected workspace ID state
+  const onSelect = (id: string) => {
+    // Set workspaceId in the URL to keep state when refreshing
     navigate(`/workspaces/${id}`);
   };
 
@@ -53,10 +59,7 @@ export const WorkspaceSwitcher = () => {
         </SelectTrigger>
         <SelectContent>
           {workspace.map((workspaceItem) => (
-            <SelectItem
-              key={workspaceItem.id}
-              value={workspaceItem.id.toString()}
-            >
+            <SelectItem key={workspaceItem.id} value={workspaceItem.id.toString()}>
               <div className="flex justify-start items-center gap-1 font-medium overflow-hidden">
                 <WorkspaceAvatar
                   name={workspaceItem.name}

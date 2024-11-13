@@ -8,7 +8,7 @@ interface ModalProps {
 }
 
 export default function Modal({ isOpen, onClose }: ModalProps) {
-  const { workspaceId } = useParams()
+  const { workspaceId } = useParams();
   return (
     <ResponsiveModal open={isOpen}>
         <CreateWorkspaceForm onCancel={onClose} actionUrl={`/workspaces/${workspaceId}`}/>

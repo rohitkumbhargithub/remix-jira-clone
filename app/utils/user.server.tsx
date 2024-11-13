@@ -1,7 +1,5 @@
 import bcrypt from 'bcryptjs';
 import { prisma } from './prisma.server';
-import { toast } from 'sonner';
-
 
 type RegisterFrom = {
     name: string,
@@ -37,9 +35,9 @@ export const getAllUsers = async () => {
     try {
         const users = await prisma.user.findMany();
         
-        return users; // Return the fetched users
+        return users; 
     } catch (error) {
         console.error("Error fetching users:", error);
-        throw error; // Optionally re-throw the error to be handled by the caller
+        throw error; 
     }
 };

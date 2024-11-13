@@ -1,4 +1,5 @@
 import { LoaderFunction, redirect } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
 import { authenticator } from "~/utils/auth.server";
 import { getAllUsers } from "~/utils/user.server";
 import { getAllMemeber } from "~/utils/workspace.server";
@@ -10,13 +11,12 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   })
   const workspaceId = params.workspaceId; 
   const members = await getAllMemeber(request);
-  const user = await getAllUsers();
+  const user = await getAllUsers(request);
   if(!workspaceId) redirect("/");
   return {workspaceId, members, user}
 };
 
 const Memebers = () => {
-  
   return (
     <div className="w-full lg:max-w-xl">
       <MembersList />

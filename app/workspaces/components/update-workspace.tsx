@@ -108,10 +108,12 @@ export const UpdateWorkspaceForm = ({
     "destructive"
   );
 
-  const handleResetInviteCode = async () => {
-    const ok = await confirmReset();
-
-    if (!ok) return;
+  const handleResetInviteCode = async (event) => {
+    event.preventDefault();
+    const confirmed = await confirmReset();
+    if (confirmed) {
+      fetcher.submit(event.target, { method: "post" });
+    }
   };
 
   const handleDelete = async (event) => {
@@ -161,12 +163,12 @@ export const UpdateWorkspaceForm = ({
           >
             <div className="flex flex-col gap-y-4">
               <div>
-                <label htmlFor="name" className="font-bold">
+                <label htmlFor="workspaceName" className="font-bold">
                   Workspace Name
                 </label>
                 <input
                   type="text"
-                  name="name"
+                  id="workspaceName" name="workspaceName"
                   placeholder="Enter Workspace Name"
                   value={name}
                   onChange={handleChangeName}
@@ -264,11 +266,11 @@ export const UpdateWorkspaceForm = ({
         <CardContent className="p-7">
         
           <div className="flex flex-col">
-            <h3 className="font-bold">Invite Memeber</h3>
+            <h3 className="font-bold">Invite Member</h3>
             <p className="text-sm text-muted-foreground">
               Use the invite link to add memebers to your workspace
             </p>
-            <div className="m</Form>t-4">
+            <div className="mt-4">
               <div className="flex items-center gap-x-2">
                 <Input disabled value={fullInviteLink} />
                 <Button
@@ -286,10 +288,10 @@ export const UpdateWorkspaceForm = ({
               className="mt-6 w-fit ml-auto"
               size="sm"
               variant="outline"
-              type="button"
+              type="submit"
+              onClick={handleResetInviteCode}
               name="reset" value="reset"
               // disabled={isPending || isResettingInviteCode  }
-              onClick={handleResetInviteCode}
             >
               Reset Invite Link
             </Button>
@@ -297,7 +299,7 @@ export const UpdateWorkspaceForm = ({
           </div>
         </CardContent>
       </Card>
-        <Card className="w-full h-full border-none shadow-none">
+        <Card className="w-full h-full border-none shadow-none mt-6">
           <CardContent className="p-7">
             <div className="flex flex-col">
               <h3 className="font-bold">Danger Zone</h3>

@@ -3,20 +3,29 @@ import UserButton from "~/componets/user-button";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { getUserSession } from "~/utils/session.server";
 import WorkspaceSetting from "./_workspaceLayout.workspaces.$workspaceId.settings";
-import { getWorkspacesByUser } from "~/utils/workspace.server";
+import { getAllMemeber, getWorkspacesByUser } from "~/utils/workspace.server";
+import { authenticator } from "~/utils/auth.server";
 
 
 
 export const loader = async ({ request }) => {
+    await authenticator.isAuthenticated(request, {
+        failureRedirect: "/sign-in"
+      });
     const user = await getUserSession(request); 
-    const workspace = await getWorkspacesByUser(request);
+    const members = await getAllMemeber(request);
+    const loggedInUserId = user.id;
+  const workspace = members
+    .filter(member => member.userId === loggedInUserId)
+    .map(member => member.workspace);
+
     return { user, workspace }; 
 };
 
 
 const WorkspaceLayout = () => {
     const { user, workspace } = useLoaderData() || {};
-    return (
+       return (
         <main className="bg-neutral-100 min-h-screen">
             <div className="mx-auto max-w-screen-2xl p-4">
                 <nav className="flex justify-between items-center h-[73px]">
