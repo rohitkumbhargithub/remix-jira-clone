@@ -106,6 +106,8 @@ export const CreateTaskForm = ({
           action={actionUrl}
           // onSubmit={handleSubmit}
         >
+          <input type="hidden" name="_method" value="POST" />
+
           <div className="flex flex-col gap-y-6">
             <div>
               <label htmlFor="taskName" className="font-bold-sm">

@@ -73,7 +73,7 @@ export const DataFilters = ({
         <SelectTrigger className="w-full lg:w-auto h-8">
           <div className="flex items-center pr-2">
             <ListCheckIcon className="size-4 mr-2" />
-            <SelectValue placeholder="All statuses" />
+            <SelectValue placeholder="All Statuses" />
           </div>
         </SelectTrigger>
         <SelectContent>
@@ -94,7 +94,7 @@ export const DataFilters = ({
         <SelectTrigger className="w-full lg:w-auto h-8">
           <div className="flex items-center pr-2">
             <UserIcon className="size-4 mr-2" />
-            <SelectValue placeholder="All assignees"/>
+            <SelectValue placeholder="All Assignees"/>
           </div>
         </SelectTrigger>
         <SelectContent>
@@ -109,19 +109,19 @@ export const DataFilters = ({
       </Select>
 
       {/* Project Filter (Optional) */}
-      {!hideProjectFilter && (
+      {hideProjectFilter && (
         <Select
-        defaultValue={projectId ?? "all"} // Set default to 'all' if assigneeId is not provided
+        defaultValue={projectId ?? "all"} 
         onValueChange={(value) => onProjectChange(value)}
       >
         <SelectTrigger className="w-full lg:w-auto h-8">
           <div className="flex items-center pr-2">
             <UserIcon className="size-4 mr-2" />
-            <SelectValue placeholder="All assignees"/>
+            <SelectValue placeholder="All Projects"/>
           </div>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">All Assignees</SelectItem>
+          <SelectItem value="all">All Projects</SelectItem>
           <SelectSeparator />
           {projectOptions?.map((project) => (
             <SelectItem key={project.value} value={project.value}>

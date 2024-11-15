@@ -53,7 +53,7 @@ export const loader = async ({ request, params }) => {
 
 export default function IndexLayout() {
 
-  const { user, workspace, workspaceId, projects, workspacesByMembers } = useLoaderData() || {};
+  const { workspace } = useLoaderData() || {};
 
   const navigate = useNavigate();
 

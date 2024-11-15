@@ -40,7 +40,6 @@ export const UpdateWorkspaceForm = ({
   const data = workspace;
   const id = initialValues;
   const fetcher = useFetcher();
-
   const workspaceData = data.find((workspace) => workspace.id === id);
 
   const [name, setName] = useState(workspaceData.name);
@@ -168,7 +167,8 @@ export const UpdateWorkspaceForm = ({
                 </label>
                 <input
                   type="text"
-                  id="workspaceName" name="workspaceName"
+                  id="workspaceName"
+                  name="workspaceName"
                   placeholder="Enter Workspace Name"
                   value={name}
                   onChange={handleChangeName}
@@ -262,43 +262,42 @@ export const UpdateWorkspaceForm = ({
         </CardContent>
       </Card>
       <Form method="post" action={actionUrl}>
-      <Card className="w-full h-full border-none shadow-none">
-        <CardContent className="p-7">
-        
-          <div className="flex flex-col">
-            <h3 className="font-bold">Invite Member</h3>
-            <p className="text-sm text-muted-foreground">
-              Use the invite link to add memebers to your workspace
-            </p>
-            <div className="mt-4">
-              <div className="flex items-center gap-x-2">
-                <Input disabled value={fullInviteLink} />
-                <Button
-                  onClick={handleCopyInviteLink}
-                  variant="secondary"
-                  className="size-10"
-                >
-                  <CopyIcon />
-                </Button>
+        <Card className="w-full h-full border-none shadow-none">
+          <CardContent className="p-7">
+            <div className="flex flex-col">
+              <h3 className="font-bold">Invite Member</h3>
+              <p className="text-sm text-muted-foreground">
+                Use the invite link to add memebers to your workspace
+              </p>
+              <div className="mt-4">
+                <div className="flex items-center gap-x-2">
+                  <Input disabled value={fullInviteLink} />
+                  <Button
+                    onClick={handleCopyInviteLink}
+                    variant="secondary"
+                    className="size-10"
+                  >
+                    <CopyIcon />
+                  </Button>
+                </div>
               </div>
+              <DottedSperator className="py-7" />
+
+              <Button
+                className="mt-6 w-fit ml-auto"
+                size="sm"
+                variant="outline"
+                type="submit"
+                onClick={handleResetInviteCode}
+                name="reset"
+                value="reset"
+                // disabled={isPending || isResettingInviteCode  }
+              >
+                Reset Invite Link
+              </Button>
             </div>
-            <DottedSperator className="py-7" />
-       
-            <Button
-              className="mt-6 w-fit ml-auto"
-              size="sm"
-              variant="outline"
-              type="submit"
-              onClick={handleResetInviteCode}
-              name="reset" value="reset"
-              // disabled={isPending || isResettingInviteCode  }
-            >
-              Reset Invite Link
-            </Button>
-          
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
         <Card className="w-full h-full border-none shadow-none mt-6">
           <CardContent className="p-7">
             <div className="flex flex-col">
@@ -308,23 +307,22 @@ export const UpdateWorkspaceForm = ({
                 assocaiated data
               </p>
               <DottedSperator className="py-7" />
-              
-                <Button
-                  className="mt-6 w-fit ml-auto"
-                  size="sm"
-                  variant="destructive"
-                  type="submit"
-                  onClick={handleDelete}
-                  name="delete" value="delete"
-                >
-                  Delete Workspace
-                </Button>
-            
+
+              <Button
+                className="mt-6 w-fit ml-auto"
+                size="sm"
+                variant="destructive"
+                type="submit"
+                onClick={handleDelete}
+                name="delete"
+                value="delete"
+              >
+                Delete Workspace
+              </Button>
             </div>
-            
           </CardContent>
         </Card>
-        </Form>
+      </Form>
     </div>
   );
 };

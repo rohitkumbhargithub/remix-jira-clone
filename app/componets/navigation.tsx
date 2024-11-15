@@ -13,13 +13,13 @@ const routes = (workspaceId) => [
     },
     {
         label: "My Tasks",
-        href: "/tasks",
+        href: `/workspaces/${workspaceId}/tasks`,
         icon: GoCheckCircle,
         activeIcon: GoCheckCircleFill,
     },
     {
         label: "Settings",
-        href: `/workspaces/${workspaceId}/settings`, // Dynamic link for settings
+        href: `/workspaces/${workspaceId}/settings`, 
         icon: IoSettingsOutline,
         activeIcon: IoSettingsOutline,
     },
@@ -44,7 +44,7 @@ export const Navigation = () => {
                     return (
                         <Link key={item.href} to={item.href}>
                             <div>
-                                <div className={`flex items-center gap-2.5 p-2.5 rounded-md font-medium hover:text-primary transition text-neutral-500 ${isActive ? "text-black shadow-sm opacity-100 text-primary" : ""}`}>
+                                <div className={`flex items-center gap-2.5 p-2.5 rounded-md font-medium hover:text-primary transition text-neutral-500 ${isActive ? "bg-white text-black shadow-sm opacity-100 text-primary" : ""}`}>
                                     <Icon className="w-5 h-5 text-neutral-500" />
                                     {item.label}
                                 </div>

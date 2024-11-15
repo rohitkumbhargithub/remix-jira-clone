@@ -1,7 +1,7 @@
 "use client";
 
 import { z } from "zod";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { cn } from "~/lib/utils";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -14,8 +14,8 @@ import { MemberAvatar } from "~/features/member/components/members-avatar";
 import { useWorkspaceId } from "~/hooks/user-workspaceId";
 import { createTaskSchema } from "../schemas";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Form, useLoaderData } from "@remix-run/react";
 import {
-  Form,
   FormControl,
   FormField,
   FormItem,
@@ -34,15 +34,56 @@ import {
 import { Task, TaskStatus } from "../types";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 
-interface EditTasksFormProps {
+type EditTasksFromProp = {
+  actionUrl: string;
+};
+
+type EditTasksFormProps = {
   onCancel?: () => void;
-}
+  taskId: string;
+  tasks: [];
+  projects: [];
+} & EditTasksFromProp;
 
-export const EditTaskForm = ( {onCancel} : EditTasksFormProps
-) => {
+export const EditTaskForm = ({
+  onCancel,
+  taskId,
+  tasks,
+  projects,
+  actionUrl,
+}: EditTasksFormProps) => {
+  const { projectId } = useLoaderData();
+  const taskData = tasks.find((task) => task.id === taskId);
+  const projectOptions = projects;
 
+  const [name, setName] = useState(taskData?.name);
+  const [date, setDate] = useState(new Date(taskData.dueDate));
+  const [assignee, setAssignee] = useState(taskData.assignee.name);
+  const [status, setStatus] = useState(taskData.status);
+  const [project, setProject] = useState(taskData.project.name);
+  const [projectImage, setProjectImage] = useState(taskData.project.imageUrl);
+  const [selectedProject, setSelectedProject] = useState<string>("");
+  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
 
-  
+  const handleDueDateChange = (date: Date | undefined) => {
+    setDueDate(date); // Set the selected date
+  };
+
+  const handleProjectChange = (id: string) => {
+    const selectedProject = projectOptions.find((p) => p.id === id);
+
+    if (selectedProject) {
+      // Set the whole object (id and name)
+      setSelectedProject(selectedProject);
+    }
+  };
+  const handleChangeName = (event) => {
+    setName(event.target.value);
+  };
+
+  const handleChangeDate = (event) => {
+    setDate(event.target.value);
+  };
 
   return (
     <div className="w-full h-full border-none shadow-none bg-white rounded-lg p-5">
@@ -54,87 +95,80 @@ export const EditTaskForm = ( {onCancel} : EditTasksFormProps
         <Form
           method="post"
           encType="multipart/form-data"
-          // action={actionUrl}
+          action={actionUrl}
           // onSubmit={handleSubmit}
         >
+          <input type="hidden" name="_method" value="PATCH" />
           <div className="flex flex-col gap-y-6">
             <div>
-              <label htmlFor="taskName" className="font-bold-sm">
+              <label htmlFor="updateTaskName" className="font-bold-sm">
                 Task Name
               </label>
               <input
                 type="text"
-                id="taskName"
-                name="taskName"
+                id="updateTaskName"
+                name="updateTaskName"
                 placeholder="Enter Task Name"
-                // value={task.taskName}
-                // onChange={handleChange}
+                value="data"
+                onChange={handleChangeName}
                 className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 required
               />
             </div>
 
             <div>
-              <label htmlFor="dueDate" className="font-bold-sm">
+              <label htmlFor="updateDueDate" className="font-bold-sm">
                 Due Date
               </label>
-              {/* <DatePicker
+              <DatePicker
                 value={dueDate}
                 onChange={handleDueDateChange}
-                name="dueDate"
+                name="updateDueDate"
                 placeholder="Select a Date"
                 className="my-4"
               />
-              {error && <p className="text-red-500">{error}</p>}{" "} */}
             </div>
 
             <div>
               <label htmlFor="assigneeId" className="font-bold-sm">
                 Assignee
               </label>
-              <Select
-                // value={selectedAssignee.id}
-                // onValueChange={handleAssigneeChange}
-                // name="assigneeId"
-              >
+              <Select value={assignee}>
                 <SelectTrigger>
-                  {/* {selectedAssignee ? (
-                    <div className="flex items-center gap-x-2">
-                      <MemberAvatar
-                        classname="size-6"
-                        name={selectedAssignee.name}
-                      />
-                      {selectedAssignee.name}
-                    </div>
-                  ) : (
-                    <span>Select assignee</span>
-                  )} */}
+                  <div className="flex items-center gap-x-2">
+                    <MemberAvatar classname="size-6" name={assignee} />
+                    {assignee}
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
-                  {/* {memberOptions.map((member) => (
-                    <SelectItem key={member.id} value={member.id}>
+                  {
+                    <SelectItem
+                      key={taskData?.assigneeId}
+                      value={taskData?.assigneeId}
+                    >
                       <div className="flex items-center gap-x-2">
-                        <MemberAvatar classname="size-6" name={member.name} />
-                        {member.name}
+                        <MemberAvatar classname="size-6" name={assignee} />
+                        {assignee}
                       </div>
                     </SelectItem>
-                  ))} */}
+                  }
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <label htmlFor="status" className="font-bold-sm">
+              <label htmlFor="UpdateStatus" className="font-bold-sm">
                 Status
               </label>
 
               <Select
-                // value={selectedStatus}
-                // onValueChange={handleStatusChange}
-                // name="status"
+                value={status}
+                name="UpdateStatus"
+                onValueChange={(newStatus) => setStatus(newStatus)} // Update state when value changes
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select Status" />
+                  {/* Display the current status or "Select Status" as a placeholder */}
+                  <SelectValue placeholder={status || "Select Status"} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={TaskStatus.BACKLOG}>Backlog</SelectItem>
@@ -151,16 +185,16 @@ export const EditTaskForm = ( {onCancel} : EditTasksFormProps
             </div>
 
             <div>
-              <label htmlFor="projectId" className="font-bold-sm">
+              <label htmlFor="UpdateProjectId" className="font-bold-sm">
                 Project
               </label>
               <Select
-                // value={selectedProject.id}
-                // onValueChange={handleProjectChange}
-                // name="projectId"
+                value={selectedProject.id}
+                onValueChange={handleProjectChange}
+                name="UpdateProjectId"
               >
                 <SelectTrigger>
-                  {/* {selectedProject ? (
+                  {selectedProject ? (
                     <div className="flex items-center gap-x-2">
                       <ProjectAvatar
                         classname="size-6"
@@ -170,11 +204,11 @@ export const EditTaskForm = ( {onCancel} : EditTasksFormProps
                       {selectedProject.name}
                     </div>
                   ) : (
-                    <span>Select assignee</span>
-                  )} */}
+                    <span>Select Projects</span>
+                  )}
                 </SelectTrigger>
                 <SelectContent>
-                  {/* {projectOptions.map((project) => (
+                  {projectOptions.map((project) => (
                     <SelectItem key={project.id} value={project.id}>
                       <div className="flex items-center gap-x-2">
                         <ProjectAvatar
@@ -185,7 +219,7 @@ export const EditTaskForm = ( {onCancel} : EditTasksFormProps
                         {project.name}
                       </div>
                     </SelectItem>
-                  ))} */}
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -200,7 +234,6 @@ export const EditTaskForm = ( {onCancel} : EditTasksFormProps
               variant="secondary"
               size="lg"
               onClick={onCancel}
-
             >
               Cancel
             </Button>

@@ -10,6 +10,8 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { useTaskFilters } from "../hooks/use-filter-tasks";
 import { DataFilters } from "./task-filter";
+import { DataKanban } from "./data-kanban";
+import { DataCelander } from "./data-calender";
 
 interface TaskViewSwitcherProps {
   hideProjectFilter?: boolean;
@@ -28,8 +30,6 @@ export const TaskViewSwitcher = ({
   const { workspaceId } = useParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-
-  console.log(dueDate)
 
 
   const filteredTasks = tasks.filter(task => {
@@ -135,10 +135,11 @@ export const TaskViewSwitcher = ({
             )}
           </TabsContent>
           <TabsContent value="kanban" className="mt-0">
-            {JSON.stringify(tasks)}
+          <DataKanban data={filteredTasks ?? []} />
           </TabsContent>
           <TabsContent value="calender" className="mt-0">
-            {JSON.stringify(tasks)}
+          <DataCelander data={filteredTasks ?? []} />
+
           </TabsContent>
         </>
       </div>

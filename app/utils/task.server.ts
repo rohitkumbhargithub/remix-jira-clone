@@ -2,6 +2,7 @@ import { getUserSession } from "./session.server";
 import { TaskStatus } from "~/tasks/types";
 import { prisma } from "./prisma.server";
 import { getAllUsers } from "./user.server";
+import { Params } from "@remix-run/react";
 
 
 type TaskForm = {
@@ -81,6 +82,69 @@ export const getTask = async (request: Request) => {
   });
   
   return tasks;
+}
+
+
+type TaskId = {
+  taskId: string | number;
+}
+
+
+type UpdateForm = {
+  id: string,
+  name: string,
+  projectId: string,
+  dueDate: string,
+  status: TaskStatus,
+}
+
+
+
+export const updateTask = async (taskId: number, task: UpdateForm, request: Request) => {
+  const user = await getUserSession(request);
+
+  if (!user) {
+    throw new Error('User must be logged in to create a workspace.');
+  }
+
+  // Check if task exists
+  const existingTask = await prisma.tasks.findUnique({
+    where: { id: taskId }
+  });
+
+  if (!existingTask) {
+    throw new Error(`Task with ID ${taskId} not found.`);
+  }
+
+  // Proceed with updating the task
+  const updatedTask = await prisma.tasks.update({
+    where: { id: taskId },
+    data: {
+      name: task.name,
+      projectId: task.projectId,
+      dueDate: task.dueDate,
+      status: task.status,
+    },
+  });
+
+  return updatedTask;
+};
+
+
+
+
+export const deleteTask = async(taskId: TaskId, request: Request) => {
+  const user = await getUserSession(request); 
+
+  if (!user) {
+    throw new Error('User must be logged in to delete a task.');
+  }
+
+  const deletedTask = await prisma.tasks.deleteMany({
+    where: { id: Number(taskId) },
+  });
+
+  return deletedTask;
 }
 
 
