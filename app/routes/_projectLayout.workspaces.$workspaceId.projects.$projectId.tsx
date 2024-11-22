@@ -2,12 +2,13 @@ import { ActionFunctionArgs } from "@remix-run/node";
 import { json, Link, redirect, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
 import { PencilIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
+import { Analytics } from "~/componets/ui/analytics";
 import { ProjectAvatar } from "~/projects/components/project-avatar";
 import { TaskViewSwitcher } from "~/tasks/components/task-switcher";
 import { authenticator } from "~/utils/auth.server";
 import { getProjectsByWorkspace } from "~/utils/project.server";
 import { getUserSession } from "~/utils/session.server";
-import { createTask, deleteTask, getTask, updateTask } from "~/utils/task.server";
+import { createTask, deleteTask, getTask, getTotalAssignee, getTotalCompleteTask, getTotalInCompleteTask, getTotalOverDueTask, getTotalTasks, updateTask } from "~/utils/task.server";
 import { getAllUsers } from "~/utils/user.server";
 import { getAllMemeber } from "~/utils/workspace.server";
 
@@ -21,11 +22,18 @@ export const loader = async ({ request, params }) => {
   const tasks = await getTask(request);
   const workspaceId = params.workspaceId;
   const projectId = params.projectId;
+  const projectIdData = Number(projectId);
   const id = Number(workspaceId);
+
+  const assignee = await getTotalAssignee(id, projectIdData);
+    const totalTask = await getTotalTasks(id, projectIdData);
+    const completedTask = await getTotalCompleteTask(id, projectIdData);
+    const inCompletedTask = await getTotalInCompleteTask(id, projectIdData);
+    const overDueTask = await getTotalOverDueTask(id, projectIdData);
   
   const projects = await getProjectsByWorkspace(request, id);
 
-  return { user, projects, projectId, members, userData, tasks };
+  return { user, projects, projectId, members, userData, tasks, assignee, totalTask, completedTask, inCompletedTask, overDueTask};
 };
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
@@ -76,18 +84,34 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 
   if (form.get("_method") === "PATCH") {
+    const taskId = form.get("taskId")
     try{
 
       const taskName = form.get("updateTaskName");
-      const dueDate = form.get("updateDueDate");
-      const projectId = form.get("UpdateProjectId");
+      const date = form.get("updateDueDate");
+      const dueDateObj = new Date(date);
+      const dueDate = dueDateObj.toISOString();
+      const projectId = Number(form.get("UpdateProjectId"));
       const status = form.get("UpdateStatus");
-      const taskId = form.get("taskId");
+      const assigneeId = Number(form.get("assigneeId"));
+      
+      const updateTaskData = {
+        taskName,
+        project: { connect: { id: projectId } },
+        assigne: { connect: { id: assigneeId } },
+        dueDate,
+        status,
+      }
 
-      return null;
+      console.log(updateTaskData)
+
+      await updateTask(Number(taskId), updateTaskData, request);
+      return redirect(`/workspaces/${workspaceId}/projects/${projectId}`);
+     
       
     }catch(error){
-      console.log(error)
+      console.error("Error deleting task:", error);
+      return json({ error: "Failed to delete task" }, { status: 500 });
     }
   }
 
@@ -96,12 +120,15 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 const ProjectId = () => {
   const userData = useLoaderData();
   const { projects, members, tasks } = useLoaderData();
+  const {workspaceId} = useParams();
+  const filteredTasks = tasks.filter(task => task.workspaceId === Number(workspaceId));
   const { projectId } = useParams();
   const id = Number(projectId);
 
   const project = projects.find((proj) => proj.id === id);
   return (
     <div className="flex flex-col gap-y-4">
+      <Analytics  /> 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-2">
           <ProjectAvatar
@@ -123,7 +150,7 @@ const ProjectId = () => {
       <TaskViewSwitcher
         projects={projects}
         members={userData}
-        tasks={tasks}
+        tasks={filteredTasks}
       />
     </div>
   );

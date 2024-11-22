@@ -10,10 +10,8 @@ import {
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 
-// import { useDeleteTask } from "../api/use-delete-task";
 import { useEditTasksModal } from "../hooks/use-Edit-modal";
 import { useState } from "react";
-import TaskModal from "~/componets/task-modal";
 import EditModal from "~/componets/edit-modal";
 
 interface TaskActionProps {
@@ -24,11 +22,9 @@ interface TaskActionProps {
 
 export const TaskActions = ({ id, projectId, children }: TaskActionProps) => {
   const { tasks, projects } = useLoaderData();
+  const userData = useLoaderData();
   const workspaceId = useWorkspaceId();
   const navigate = useNavigate();
-
-  
-
 
   // const { open } = useEditTasksModal();
 
@@ -36,8 +32,6 @@ export const TaskActions = ({ id, projectId, children }: TaskActionProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const openModal = async (id: string) => {
-
-
     const formData = new FormData();
     formData.append("_method", "PATCH");
     formData.append("taskId", id);
@@ -46,7 +40,6 @@ export const TaskActions = ({ id, projectId, children }: TaskActionProps) => {
       method: "POST",
       body: formData,
     });
-    navigate(`/workspaces/${workspaceId}/projects/${projectId}`);
 
     searchParams.set("edit-task", "true");
     setSearchParams(searchParams);
@@ -90,7 +83,7 @@ export const TaskActions = ({ id, projectId, children }: TaskActionProps) => {
   return (
     <div className="flex justify-end">
       <DeleteDialog />
-      <EditModal isOpen={isModalOpen} onClose={closeModal} taskId={id} tasks={tasks} projects={projects}/>
+      <EditModal isOpen={isModalOpen} onClose={closeModal} taskId={id} tasks={tasks} projects={projects} members={userData}/>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">

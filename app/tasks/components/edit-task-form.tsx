@@ -43,6 +43,7 @@ type EditTasksFormProps = {
   taskId: string;
   tasks: [];
   projects: [];
+  members:[];
 } & EditTasksFromProp;
 
 export const EditTaskForm = ({
@@ -51,10 +52,12 @@ export const EditTaskForm = ({
   tasks,
   projects,
   actionUrl,
+  members,
 }: EditTasksFormProps) => {
   const { projectId } = useLoaderData();
   const taskData = tasks.find((task) => task.id === taskId);
   const projectOptions = projects;
+  const memberOptions = members;
 
   const [name, setName] = useState(taskData?.name);
   const [date, setDate] = useState(new Date(taskData.dueDate));
@@ -63,27 +66,36 @@ export const EditTaskForm = ({
   const [project, setProject] = useState(taskData.project.name);
   const [projectImage, setProjectImage] = useState(taskData.project.imageUrl);
   const [selectedProject, setSelectedProject] = useState<string>("");
-  const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
+  const [selectedAssignee, setSelectedAssignee] = useState<string>("");
 
-  const handleDueDateChange = (date: Date | undefined) => {
-    setDueDate(date); // Set the selected date
+  const handleDueDateChange = (selectedDate: any) => {
+    // Ensure the selectedDate is valid and update the state
+    if (selectedDate) {
+      setDate(new Date(selectedDate)); // Convert if needed
+    }
+  };
+
+  const handleAssigneeChange = (id: string) => {
+    const selectedMember = memberOptions.find((m) => m.id === id);
+
+    if (selectedMember) {
+      // Set the whole object (id and name)
+      setSelectedAssignee(selectedMember);
+    }
   };
 
   const handleProjectChange = (id: string) => {
     const selectedProject = projectOptions.find((p) => p.id === id);
-
     if (selectedProject) {
-      // Set the whole object (id and name)
+      
       setSelectedProject(selectedProject);
     }
   };
+  
   const handleChangeName = (event) => {
     setName(event.target.value);
   };
 
-  const handleChangeDate = (event) => {
-    setDate(event.target.value);
-  };
 
   return (
     <div className="w-full h-full border-none shadow-none bg-white rounded-lg p-5">
@@ -99,6 +111,7 @@ export const EditTaskForm = ({
           // onSubmit={handleSubmit}
         >
           <input type="hidden" name="_method" value="PATCH" />
+          <input type="hidden" name="taskId" value={taskId ?? ""} />
           <div className="flex flex-col gap-y-6">
             <div>
               <label htmlFor="updateTaskName" className="font-bold-sm">
@@ -109,7 +122,7 @@ export const EditTaskForm = ({
                 id="updateTaskName"
                 name="updateTaskName"
                 placeholder="Enter Task Name"
-                value="data"
+                value={name}
                 onChange={handleChangeName}
                 className="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 required
@@ -121,7 +134,7 @@ export const EditTaskForm = ({
                 Due Date
               </label>
               <DatePicker
-                value={dueDate}
+                value={date}
                 onChange={handleDueDateChange}
                 name="updateDueDate"
                 placeholder="Select a Date"
@@ -133,25 +146,37 @@ export const EditTaskForm = ({
               <label htmlFor="assigneeId" className="font-bold-sm">
                 Assignee
               </label>
-              <Select value={assignee}>
+              <Select
+                value={selectedAssignee.id}
+                onValueChange={handleAssigneeChange}
+                name="assigneeId"
+              >
                 <SelectTrigger>
-                  <div className="flex items-center gap-x-2">
-                    <MemberAvatar classname="size-6" name={assignee} />
-                    {assignee}
-                  </div>
+                  {selectedAssignee ? (
+                    <div className="flex items-center gap-x-2">
+                      <MemberAvatar
+                        classname="size-6"
+                        name={selectedAssignee.name}
+                      />
+                      {selectedAssignee.name}
+                    </div>
+                  ) : (
+                    <span>Select assignee</span>
+                  )}
                 </SelectTrigger>
                 <SelectContent>
-                  {
-                    <SelectItem
-                      key={taskData?.assigneeId}
-                      value={taskData?.assigneeId}
-                    >
+                  {memberOptions.map((member) => (
+                    <SelectItem key={member.id} value={member.id}>
                       <div className="flex items-center gap-x-2">
-                        <MemberAvatar classname="size-6" name={assignee} />
-                        {assignee}
+                        <ProjectAvatar
+                          classname="size-6"
+                          name={member.name}
+                          image={member.imageUrl}
+                        />
+                        {member.name}
                       </div>
                     </SelectItem>
-                  }
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -204,7 +229,7 @@ export const EditTaskForm = ({
                       {selectedProject.name}
                     </div>
                   ) : (
-                    <span>Select Projects</span>
+                   <span>Select project</span>
                   )}
                 </SelectTrigger>
                 <SelectContent>

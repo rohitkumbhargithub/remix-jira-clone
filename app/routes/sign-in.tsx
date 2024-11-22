@@ -6,46 +6,44 @@ import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import Navbar from "~/componets/navbar";
+import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { authenticator } from "~/utils/auth.server";
 import { getAllUsers } from "~/utils/user.server";
 
-
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await authenticator.isAuthenticated(request, {
-      successRedirect: "/",
-  })
+    successRedirect: "/",
+  });
 
   return user;
-}
+};
 
 export const action: ActionFunction = async ({ request }) => {
-
   const form = await request.clone().formData();
   const action = form.get("_action");
   const email = form.get("email");
   const password = form.get("password");
- 
-  if(password.length < 8){
+
+  if (password.length < 8) {
     return json({ error: "Password not match" }, { status: 400 });
   }
 
   const users = await getAllUsers();
   const checkEmailExists = (inputEmail) => {
-    return users.some(user => user.email === inputEmail);
+    return users.some((user) => user.email === inputEmail);
   };
 
   const emailExist = checkEmailExists(email);
 
-  if(!emailExist){
+  if (!emailExist) {
     return json({ error: "User not Register!" }, { status: 400 });
-
   }
 
   return authenticator.authenticate("form", request, {
-      successRedirect: "/",
-      failureRedirect: "/sign-in",
-  })
-}
+    successRedirect: "/",
+    failureRedirect: "/sign-in",
+  });
+};
 
 const SignIn = () => {
   const actionData = useActionData();
@@ -57,21 +55,20 @@ const SignIn = () => {
       toast.success(actionData.success); // Use toast.success for success messages
     }
   }, [actionData]);
-    return (
-        <>
-          <Navbar/>
-            <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+  return (
+    <>
+      <Navbar />
+      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
             Welcome Back!
           </h2>
+          <DottedSperator className="mt-2" />
         </div>
 
-        <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
+        <div className="mt-4 sm:mx-auto sm:w-full sm:max-w-sm">
           <Form method="POST" className="space-y-6">
             <div>
-    
               <div className="mt-2">
                 <input
                   id="email"
@@ -116,36 +113,42 @@ const SignIn = () => {
               </button>
             </div>
           </Form>
+          <DottedSperator className="mt-2" />
 
-          <Button
-                type="submit"
-                className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 mt-3"
-                variant="outline"
-              >
-                <FcGoogle className="mr-2 size-5"/>
-                Login with Google 
-              </Button>
+          <a href="/auth/google">
+            <Button
+              type="submit"
+              className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 mt-3"
+              variant="outline"
+            >
+              <FcGoogle className="mr-2 size-5" />
+              Login with Google
+            </Button>
+          </a>
 
-          <Button
-                type="submit"
-                className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 mt-3"
-                variant="outline"
-              >
-                <FaGithub className="mr-2 size-5"/>
-                Login with GitHub 
-              </Button>
-
-
+          <a href="/auth/github">
+            <Button
+              type="submit"
+              className="flex w-full justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 mt-3"
+              variant="outline"
+            >
+              <FaGithub className="mr-2 size-5" />
+              Login with GitHub
+            </Button>
+          </a>
           <p className="mt-10 text-center text-sm text-gray-500">
-            Not a member?
-            <Link to={"/sign-up"} className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500">
+            Already have an account?
+            <Link
+              to={"/sign-up"}
+              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+            >
               Sign Up
             </Link>
           </p>
         </div>
       </div>
-        </>
-    )
-}
+    </>
+  );
+};
 
 export default SignIn;

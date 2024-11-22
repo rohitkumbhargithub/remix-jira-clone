@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useLocation } from "@remix-run/react"
+import { Link, useLocation } from "@remix-run/react"
 import { Button } from "~/components/ui/button";
 import Logo from "~/componets/utils/logo.png"
 

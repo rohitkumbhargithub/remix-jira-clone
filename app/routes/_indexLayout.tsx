@@ -3,13 +3,13 @@ import { Outlet, useLoaderData, useNavigate } from "@remix-run/react";
 import { MetaFunction } from "@remix-run/node";
 import { Nav } from "~/componets/nav";
 import { Sidebar } from "~/componets/sidebar";
-
 import { getAllMemeber, getMemeberByWorkspace } from "~/utils/workspace.server";
 import { useEffect } from "react";
 import { getUserSession } from "~/utils/session.server";
 import { CreateProjectModal } from "~/projects/context/create-project-modal";
 import { getProjectsByWorkspace } from "~/utils/project.server";
 import { authenticator } from "~/utils/auth.server";
+import { authenticatorGithub } from "~/utils/github-strategy.server";
 
 
 export const meta: MetaFunction = () => {
@@ -23,6 +23,7 @@ export const loader = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
       failureRedirect: "/sign-in"
     });
+  
   const user = await getUserSession(request); 
 
   const workspaceId = params.workspaceId;

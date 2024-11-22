@@ -11,9 +11,7 @@ import { useWorkspaceId } from "~/hooks/user-workspaceId"
 
 export const MembersList = () => {
     const user = useLoaderData();
-    const { members } = useLoaderData();
     const data = user;
-
 
     const workspaceId = useWorkspaceId();
     const id = parseInt(workspaceId, 10);

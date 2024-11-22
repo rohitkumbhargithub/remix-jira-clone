@@ -45,3 +45,4 @@ const formStrategy = new FormStrategy(async ({ form }) => {
 authenticator.use(formStrategy, "form");
 
 export { authenticator };
+

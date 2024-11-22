@@ -22,7 +22,7 @@ export const ProjectAvatar = ({
                 "size-5 relative rounded-md overflow-hidden",
                 classname
             )}>
-                <img src={image} alt={name} fill className="object-cover" />
+                <img src={image} alt={name} className="object-cover" />
             </div>
         )
     }

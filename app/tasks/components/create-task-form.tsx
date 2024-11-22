@@ -221,7 +221,7 @@ export const CreateTaskForm = ({
                       {selectedProject.name}
                     </div>
                   ) : (
-                    <span>Select assignee</span>
+                    <span>Select Projects</span>
                   )}
                 </SelectTrigger>
                 <SelectContent>
