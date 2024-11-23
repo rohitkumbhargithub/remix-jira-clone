@@ -4,13 +4,12 @@ import { MetaFunction } from "@remix-run/node";
 import { Nav } from "~/componets/nav";
 import { Sidebar } from "~/componets/sidebar";
 import { getAllMemeber, getMemeberByWorkspace } from "~/utils/workspace.server";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getUserSession } from "~/utils/session.server";
 import { CreateProjectModal } from "~/projects/context/create-project-modal";
 import { getProjectsByWorkspace } from "~/utils/project.server";
 import { authenticator } from "~/utils/auth.server";
 import { authenticatorGithub } from "~/utils/github-strategy.server";
-
 
 export const meta: MetaFunction = () => {
   return [
@@ -23,7 +22,7 @@ export const loader = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
       failureRedirect: "/sign-in"
     });
-  
+
   const user = await getUserSession(request); 
 
   const workspaceId = params.workspaceId;
@@ -35,7 +34,7 @@ export const loader = async ({ request, params }) => {
 
   let projects;
 
-  if(id){
+  if (id) {
     projects = await getProjectsByWorkspace(request, id);
   }
 
@@ -48,42 +47,41 @@ export const loader = async ({ request, params }) => {
     .filter(member => member.userId === loggedInUserId)
     .map(member => member.workspace);
 
-  return { user, workspace, workspaceId, member, projects, workspacesByMembers}; 
+  return { user, workspace, workspaceId, member, projects, workspacesByMembers }; 
 };
 
-
 export default function IndexLayout() {
-
-  const { workspace } = useLoaderData() || {};
+  const { workspace, workspaceId, projects, workspacesByMembers } = useLoaderData() || {};
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(Number(workspaceId));
 
   const navigate = useNavigate();
 
-    useEffect(() => {
-      if (workspace.length === 0) {
-        
-        navigate(`/workspaces/create`)
-      }else{
-        navigate(`/workspaces/${workspace[0].id}`);
-      }
-    }, []); 
-
-
+  useEffect(() => {
+    if (workspace.length === 0) {
+      navigate(`/workspaces/create`);
+    } else {
+      setSelectedWorkspaceId(workspaceId);
+    }
+  }, [workspaceId, navigate]);
 
   return (
     <>
       <div className="min-h-screen">
         <CreateWorkspaceModal />
-        <CreateProjectModal/>
+        <CreateProjectModal />
         <div className="flex w-full h-full">
           <div className="flex left-0 top-0 hidden lg:block lg:w-[350px] f-full overflow-y-auto">
-            <Sidebar />
+            <Sidebar 
+              workspaces={workspacesByMembers} 
+              selectedWorkspaceId={selectedWorkspaceId} 
+              setSelectedWorkspaceId={setSelectedWorkspaceId} 
+            />
           </div>
           <div className="lg w-full">
             <div className="mx-auto max-w-screen-2xl h-full">
               <Nav />
-
               <main className="h-full py-8 px-6 flex flex-col">
-                <Outlet />
+                <Outlet context={{ projects: projects, selectedWorkspaceId }} />
               </main>
             </div>
           </div>

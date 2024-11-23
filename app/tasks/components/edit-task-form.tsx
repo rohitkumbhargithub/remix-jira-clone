@@ -43,7 +43,7 @@ type EditTasksFormProps = {
   taskId: string;
   tasks: [];
   projects: [];
-  members:[];
+  members: [];
 } & EditTasksFromProp;
 
 export const EditTaskForm = ({
@@ -54,19 +54,36 @@ export const EditTaskForm = ({
   actionUrl,
   members,
 }: EditTasksFormProps) => {
-  const { projectId } = useLoaderData();
   const taskData = tasks.find((task) => task.id === taskId);
   const projectOptions = projects;
   const memberOptions = members;
 
   const [name, setName] = useState(taskData?.name);
   const [date, setDate] = useState(new Date(taskData.dueDate));
-  const [assignee, setAssignee] = useState(taskData.assignee.name);
   const [status, setStatus] = useState(taskData.status);
-  const [project, setProject] = useState(taskData.project.name);
-  const [projectImage, setProjectImage] = useState(taskData.project.imageUrl);
-  const [selectedProject, setSelectedProject] = useState<string>("");
-  const [selectedAssignee, setSelectedAssignee] = useState<string>("");
+
+
+  const [selectedAssignee, setSelectedAssignee] = useState<{
+    id: string;
+    name: string;
+  } | null>(
+    taskData?.assigneeId
+      ? { id: taskData.assigneeId, name: taskData.assignee.name }
+      : null
+  );
+  const [selectedProject, setSelectedProject] = useState<{
+    id: string;
+    name: string;
+    image: string;
+  } | null>(
+    taskData?.projectId
+      ? {
+          id: taskData.projectId,
+          name: taskData.project.name,
+          image: taskData.project.imageUrl,
+        }
+      : null
+  );
 
   const handleDueDateChange = (selectedDate: any) => {
     // Ensure the selectedDate is valid and update the state
@@ -77,9 +94,7 @@ export const EditTaskForm = ({
 
   const handleAssigneeChange = (id: string) => {
     const selectedMember = memberOptions.find((m) => m.id === id);
-
     if (selectedMember) {
-      // Set the whole object (id and name)
       setSelectedAssignee(selectedMember);
     }
   };
@@ -87,15 +102,13 @@ export const EditTaskForm = ({
   const handleProjectChange = (id: string) => {
     const selectedProject = projectOptions.find((p) => p.id === id);
     if (selectedProject) {
-      
       setSelectedProject(selectedProject);
     }
   };
-  
+
   const handleChangeName = (event) => {
     setName(event.target.value);
   };
-
 
   return (
     <div className="w-full h-full border-none shadow-none bg-white rounded-lg p-5">
@@ -147,7 +160,7 @@ export const EditTaskForm = ({
                 Assignee
               </label>
               <Select
-                value={selectedAssignee.id}
+                value={selectedAssignee?.id || ""}
                 onValueChange={handleAssigneeChange}
                 name="assigneeId"
               >
@@ -161,18 +174,14 @@ export const EditTaskForm = ({
                       {selectedAssignee.name}
                     </div>
                   ) : (
-                    <span>Select assignee</span>
+                    <span>{taskData?.assignee.name || "Select an assignee"}</span>
                   )}
                 </SelectTrigger>
                 <SelectContent>
                   {memberOptions.map((member) => (
                     <SelectItem key={member.id} value={member.id}>
                       <div className="flex items-center gap-x-2">
-                        <ProjectAvatar
-                          classname="size-6"
-                          name={member.name}
-                          image={member.imageUrl}
-                        />
+                        <MemberAvatar classname="size-6" name={member.name} />
                         {member.name}
                       </div>
                     </SelectItem>
@@ -214,22 +223,22 @@ export const EditTaskForm = ({
                 Project
               </label>
               <Select
-                value={selectedProject.id}
+                value={selectedProject?.id || ""}
                 onValueChange={handleProjectChange}
                 name="UpdateProjectId"
               >
                 <SelectTrigger>
-                  {selectedProject ? (
+                  {selectedAssignee ? (
                     <div className="flex items-center gap-x-2">
                       <ProjectAvatar
                         classname="size-6"
-                        name={selectedProject.name}
-                        image={selectedProject.imageUrl}
+                        name={selectedProject?.name}
+                        image={selectedProject?.image}
                       />
-                      {selectedProject.name}
+                      {selectedProject?.name}
                     </div>
                   ) : (
-                   <span>Select project</span>
+                    <span>{taskData.project.name || "Select an project"}</span>
                   )}
                 </SelectTrigger>
                 <SelectContent>

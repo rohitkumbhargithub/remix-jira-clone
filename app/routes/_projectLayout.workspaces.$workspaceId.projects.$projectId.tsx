@@ -87,7 +87,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     const taskId = form.get("taskId")
     try{
 
-      const taskName = form.get("updateTaskName");
+      const name = form.get("updateTaskName");
       const date = form.get("updateDueDate");
       const dueDateObj = new Date(date);
       const dueDate = dueDateObj.toISOString();
@@ -96,21 +96,21 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       const assigneeId = Number(form.get("assigneeId"));
       
       const updateTaskData = {
-        taskName,
-        project: { connect: { id: projectId } },
-        assigne: { connect: { id: assigneeId } },
+        name,
+        projectId,
+        assigneeId,
         dueDate,
         status,
       }
 
-      console.log(updateTaskData)
-
-      await updateTask(Number(taskId), updateTaskData, request);
+      if(updateTaskData.name !== undefined && projectId !== 0 && assigneeId !== 0){
+        await updateTask(Number(taskId), updateTaskData, request);
+        return redirect(`/workspaces/${workspaceId}/projects/${projectId}`);
+      }
       return redirect(`/workspaces/${workspaceId}/projects/${projectId}`);
-     
       
     }catch(error){
-      console.error("Error deleting task:", error);
+      console.error("Error updating task:", error);
       return json({ error: "Failed to delete task" }, { status: 500 });
     }
   }

@@ -76,7 +76,7 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
       const destStatus = destination.droppableId as TaskStatus;
 
       let updatesPayload: {
-        id: string;
+        id: number;
         status: TaskStatus;
         position: number;
       }[] = [];
@@ -106,7 +106,7 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
         updatesPayload = [];
 
         updatesPayload.push({
-          id: updateMovedTask.id,
+          id: Number(updateMovedTask.id),
           status: destStatus,
           position: Math.min((destination.index + 1) * 1000, 1_000_000),
         });
@@ -153,6 +153,7 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
       <div className="flex overflow-x-auto">
         {boards.map((board) => (
           <div key={board} className="flex-1 mx-2 bg-muted p-1.5 rounded-md min-w-[180px]">
+            
             <KanbanColoumHeader board={board} taskCount={tasks[board].length} />
             <Droppable droppableId={board}>
               {(provided) => (
@@ -162,7 +163,7 @@ export const DataKanban = ({ data, onChange }: DataKanbanProps) => {
                   className="min-h-[200px] py-1.5"
                 >
                   {tasks[board].map((task, index) => (
-                    <Draggable key={task.id} draggableId={task.id} index={index}>
+                    <Draggable key={task?.id} draggableId={String(task?.id)} index={index}>
                       {(provided) => (
                         <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
                           <KanbanCard task={task} />

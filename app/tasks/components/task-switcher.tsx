@@ -3,8 +3,8 @@ import { useQueryState } from "nuqs";
 import { Button } from "~/components/ui/button";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { useState } from "react";
-import { useLoaderData, useParams, useSearchParams } from "@remix-run/react";
+import { useCallback, useState } from "react";
+import { useFetcher, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
 import TaskModal from "~/componets/task-modal";
 import { DataTable } from "./data-table";
 import { columns } from "./columns";
@@ -12,6 +12,7 @@ import { useTaskFilters } from "../hooks/use-filter-tasks";
 import { DataFilters } from "./task-filter";
 import { DataKanban } from "./data-kanban";
 import { DataCelander } from "./data-calender";
+import { TaskStatus } from "../types";
 
 interface TaskViewSwitcherProps {
   hideProjectFilter?: boolean;
@@ -28,8 +29,22 @@ export const TaskViewSwitcher = ({
 }: TaskViewSwitcherProps) => {
   const { status, assigneeId, projectId, dueDate } = useTaskFilters();
   const { workspaceId } = useParams();
+  const WorkspaceID = Number(workspaceId);
+  const ProjectID = Number(projectId);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
+  const fetcher = useFetcher();
+
+  const onKanbanChange = useCallback(
+    (tasks: { id: number; status: TaskStatus; position: number }[]) => {
+      fetcher.submit(
+        { tasks: JSON.stringify(tasks) },
+        { method: "post", action: `/workspaces/${WorkspaceID}/projects/${ProjectID}/bulk-update` }
+      );
+    },
+    [fetcher, workspaceId, projectId]
+  );
+  
 
 
   const filteredTasks = tasks.filter(task => {
@@ -135,7 +150,7 @@ export const TaskViewSwitcher = ({
             )}
           </TabsContent>
           <TabsContent value="kanban" className="mt-0">
-          <DataKanban data={filteredTasks ?? []} />
+          <DataKanban onChange={onKanbanChange} data={filteredTasks ?? []} />
           </TabsContent>
           <TabsContent value="calender" className="mt-0">
           <DataCelander data={filteredTasks ?? []} />

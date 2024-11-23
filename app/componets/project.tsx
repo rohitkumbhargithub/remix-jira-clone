@@ -9,7 +9,7 @@ import { cn } from "~/lib/utils";
 
 const Project = () => {
   const { projects = [] } = useLoaderData();
-  const { workspaceId } = useParams(); // This gets the workspaceId from the URL
+  const { workspaceId } = useParams();
   const filteredProjects = workspaceId
     ? projects.filter((project) => project.workspaceId === parseInt(workspaceId))
     : projects;
