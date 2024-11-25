@@ -81,7 +81,6 @@ export const getWorkspacesByUser = async (request: Request) => {
         },
     });
 
-    // const workspaces = await prisma.workspace.findMany();
     return workspaces;
 };
 
@@ -170,6 +169,126 @@ export const getMemeberByWorkspace = async(request: Request, params: Params) => 
 });
 return members;
 }
+
+type MemberId = {
+  memberId: number;
+}
+
+export const deleteMemberInWorkspace = async(memerId: MemberId, workspaceId: WorkspaceId, request: Request) => {
+  const user = await getUserSession(request);
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
+
+  const memberData = await prisma.member.findMany({
+    where: {
+      userId: Number(memerId),
+      workspaceId: Number(workspaceId),
+    }
+  })
+
+  if (memberData[0].role === 'ADMIN') {
+    throw new Error("You can't delete");
+  }
+
+  const workspaceMemeber = await prisma.member.findMany({
+    where: {
+      userId: Number(memerId),
+    }
+  })
+
+  if(workspaceMemeber.length === 1){
+    throw new Error("failed to delete");
+  }
+
+  const deleteMember = await prisma.member.delete({
+    where: {
+      id: memberData[0].id,
+    }
+  });
+
+  return deleteMember;
+}
+
+export const updateAsMemberInWorkspace = async(memerId: MemberId, workspaceId: WorkspaceId, request: Request) => {
+  const user = await getUserSession(request);
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
+
+  const memberData = await prisma.member.findMany({
+    where: {
+      userId: Number(memerId),
+      workspaceId: Number(workspaceId),
+    }
+  })
+
+  const workspaceMemeber = await prisma.member.findMany({
+    where: {
+      userId: Number(memerId),
+    }
+  })
+
+  if(workspaceMemeber.length === 1){
+    throw new Error("failed to update");
+  }
+
+  // if (memberData[0].role !== 'ADMIN') {
+  //   updateMember = await prisma.member.update({
+  //     where: {
+  //       id: memberData[0].id,
+  //     },
+  //     data: {
+  //       role: MemberRole.ADMIN
+  //     }
+  //   });
+  // }
+
+  if (memberData[0].role === 'ADMIN') {
+    throw new Error("failed to update");
+  }
+
+
+  if (memberData[0].role === 'MEMBER'){
+    updateMember = await prisma.member.update({
+      where: {
+        id: memberData[0].id,
+      },
+      data: {
+        role: MemberRole.ADMIN
+      }
+    });
+  }
+
+
+  return updateMember;
+}
+
+export const updateAsAdminInWorkspace = async(memerId: MemberId, workspaceId: WorkspaceId, request: Request) => {
+  const user = await getUserSession(request);
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
+
+  const memberData = await prisma.member.findMany({
+    where: {
+      userId: Number(memerId),
+      workspaceId: Number(workspaceId),
+    }
+  })
+
+  const updateMember = await prisma.member.update({
+    where: {
+      id: memberData[0].id,
+    },
+    data: {
+      role: MemberRole.ADMIN
+    }
+  });
+
+  return updateMember;
+}
+
 
 export const getJoinedWorkspace = async (params: Params, request: Request) => {
   const user = await getUserSession(request);

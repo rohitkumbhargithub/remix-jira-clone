@@ -137,6 +137,28 @@ export const deleteTask = async (taskId: TaskId, request: Request) => {
   return deletedTask;
 };
 
+type UpdateDescription = {
+  description: string | null;
+};
+
+export const updateDescription = async(taskId: TaskId, description: UpdateDescription,  request: Request) => {
+  const user = await getUserSession(request);
+
+  if (!user) {
+    throw new Error("User must be logged in to delete a task.");
+  }
+
+  const descriptionTask = await prisma.tasks.updateMany({
+    where: { id: Number(taskId) },
+    data: {
+      description: description,
+    }
+  });
+
+  return descriptionTask;
+}
+
+
 type WorkspaceId = {
   workspaceId: string | number;
 };

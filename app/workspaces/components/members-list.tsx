@@ -1,17 +1,20 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
-import { Link, useLoaderData } from "@remix-run/react"
+import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react"
 import { ArrowLeftIcon, MoreVerticalIcon } from "lucide-react"
+import { Navigate } from "react-big-calendar"
 import { Fragment } from "react/jsx-runtime"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
 import { Separator } from "~/components/ui/separator"
 import { DottedSperator } from "~/componets/ui/dotted-speartar"
+import { useConfirm } from "~/features/hooks/useConfirm"
 import { MemberAvatar } from "~/features/member/components/members-avatar"
 import { useWorkspaceId } from "~/hooks/user-workspaceId"
 
 export const MembersList = () => {
     const user = useLoaderData();
     const data = user;
+    const navigate = useNavigate();
 
     const workspaceId = useWorkspaceId();
     const id = parseInt(workspaceId, 10);
@@ -28,9 +31,41 @@ export const MembersList = () => {
 
     const users = usersInCurrentWorkspace;
 
+    const [DeleteDialog, confirmDelete] = useConfirm(
+        "Delete task",
+        "This action cannot be undone",
+        "destructive"
+      );
+    
+      const handleDeleteMember = async (id: string) => {
+        const ok = await confirmDelete();
+        if (!ok) return;
+        const formData = new FormData();
+        formData.append("_method", "DELETE");
+        formData.append("memberId", id);
+    
+        await fetch(`/workspaces/${workspaceId}/members`, {
+          method: "POST",
+          body: formData,
+        });
+        navigate(`/workspaces/${workspaceId}/members`);
+      };
+
+      const handleUpdateMember = async(id: string) => {
+        const formData = new FormData();
+        formData.append("_method", "PATCH");
+        formData.append("memberId", id);
+    
+        await fetch(`/workspaces/${workspaceId}/members`, {
+          method: "POST",
+          body: formData,
+        });
+        navigate(`/workspaces/${workspaceId}/members`);
+      }
+
         return (
         <Card className="w-full h-full border-none shadow-none">
-            {/* <ConfirmDialog/> */}
+           <DeleteDialog/>
             <CardHeader className="flex flex-row items-center gap-x-4 p-7 space-y-0">
                 <Button asChild variant="outline" size="sm">
                     <Link to={`/workspaces/${workspaceId}`}>
@@ -45,9 +80,10 @@ export const MembersList = () => {
                 <div className="px-7">
                     <DottedSperator/>
                 </div>
+                <Form method="post">
             <CardContent className="p-7">
                 {users.map((member, index) => (
-                    <Fragment key={member.$id}>
+                    <Fragment key={member.id}>
                         <div className="flex items-center gap-2">
                             <MemberAvatar classname="size-10"
                             fallbackClassName="text-lg"
@@ -57,6 +93,7 @@ export const MembersList = () => {
                                 <p className="text-sm font-medium">{member.name}</p>
                                 <p className="text-xs text-muted-foreground">{member.email}</p>
                             </div>
+                            <input type="hidden" name="memberId" value={member.id} />
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                             <Button className="ml-auto"
@@ -67,21 +104,19 @@ export const MembersList = () => {
                             </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent side="bottom" align="end" className="bg-slate-50 p-3 rounded-md">
-                                <DropdownMenuItem className="font-medium"
-                                    // onClick={() => handleUpdateMember(member.$id, MemberRole.ADMIN)}
-                                    // disabled={isUpdatingMember}
+                                <DropdownMenuItem className="font-medium cursor-pointer"
+                                    onClick={() => handleUpdateMember(member.id)}
                                 >
                                 Set as Administrator
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="font-medium"
-                                    // onClick={() => handleUpdateMember(member.$id, MemberRole.MEMBER)}
-                                    // disabled={isUpdatingMember}
+                                <DropdownMenuItem className="font-medium cursor-pointer"
+                                    onClick={() => handleUpdateMember(member.id)}
+                                
                                 >
                                 Set as Member
                                 </DropdownMenuItem>
-                                <DropdownMenuItem className="font-medium text-amber-700"
-                                    // onClick={() => handleDeleteMember(member.$id)}
-                                    // disabled={isDeletingMember}
+                                <DropdownMenuItem className="font-medium text-amber-700 cursor-pointer"
+                                    onClick={() => handleDeleteMember(member.id)}
                                 >
                                 Remove {member.name}
                                 </DropdownMenuItem>
@@ -94,6 +129,7 @@ export const MembersList = () => {
                     </Fragment>
                 ))}
             </CardContent>
+                </Form>
         </Card>
     )
 }

@@ -5,6 +5,7 @@ import { Button } from "~/components/ui/button";
 import { Textarea } from "~/components/ui/textarea";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { Task } from "../types";
+import { Form } from "@remix-run/react";
 // import { useUpdateTask } from "../api/use-update-task";
 
 interface TaskDescriptionProps {
@@ -13,18 +14,10 @@ interface TaskDescriptionProps {
 
 export const TaskDescription = ({task} : TaskDescriptionProps) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [value, setValue] = useState(task.description);
-    // const { mutate, isPending } = useUpdateTask();
+    const [value, setValue] = useState(task?.description);
 
     const handleSave = () => {
-        // mutate({
-        //     json: { description: value },
-        //     param: { taskId: task.$id },
-        // }, {
-        //     onSuccess: () => {
-        //         setIsEditing(false);
-        //     }
-        // })
+      
     }
 
     return (
@@ -39,16 +32,18 @@ export const TaskDescription = ({task} : TaskDescriptionProps) => {
                             <PencilIcon className="size-4 mr-2" />
                         )
                     }
-                   {isEditing ? "Cancel" : "Edit"}
+                   {isEditing ? "Back" : "Edit"}
                 </Button>
             </div>
             <DottedSperator className="my-4"/>
             {
                 isEditing ? (
+                    <Form method="post">
                     <div className="flex flex-col gap-y-4">
                         <Textarea
                             placeholder="Add a description..."
                             value={value}
+                            name="description"
                             rows={4}
                             onChange={(e) => setValue(e.target.value)}
                             // disabled={isPending}
@@ -63,6 +58,7 @@ export const TaskDescription = ({task} : TaskDescriptionProps) => {
                             Save
                         </Button>
                     </div>
+                    </Form>
                 ) : (
                     <div>
                     {task.description || (
@@ -73,8 +69,6 @@ export const TaskDescription = ({task} : TaskDescriptionProps) => {
                 </div>
                 )
             }
-        
-           
         </div>
     )
 }

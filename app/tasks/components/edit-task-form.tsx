@@ -228,12 +228,12 @@ export const EditTaskForm = ({
                 name="UpdateProjectId"
               >
                 <SelectTrigger>
-                  {selectedAssignee ? (
+                  {selectedProject ? (
                     <div className="flex items-center gap-x-2">
                       <ProjectAvatar
                         classname="size-6"
                         name={selectedProject?.name}
-                        image={selectedProject?.image}
+                        image={selectedProject?.imageUrl}
                       />
                       {selectedProject?.name}
                     </div>
@@ -247,10 +247,10 @@ export const EditTaskForm = ({
                       <div className="flex items-center gap-x-2">
                         <ProjectAvatar
                           classname="size-6"
-                          name={project.name}
-                          image={project.imageUrl}
+                          name={project?.name}
+                          image={project?.imageUrl}
                         />
-                        {project.name}
+                        {project?.name}
                       </div>
                     </SelectItem>
                   ))}
@@ -273,7 +273,7 @@ export const EditTaskForm = ({
             </Button>
 
             <Button type="submit" name="task" size="lg" onClick={close}>
-              Create Task
+              Save the changes
             </Button>
           </div>
         </Form>

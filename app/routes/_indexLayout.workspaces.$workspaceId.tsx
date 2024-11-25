@@ -1,7 +1,7 @@
 import { LoaderFunction, ActionFunctionArgs, UploadHandler } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 import { createWorkspaces, getAllMemeber } from "~/utils/workspace.server";
-import { Link, redirect, useLoaderData, useParams } from "@remix-run/react";
+import { Link, redirect, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
 import {
     json,
     unstable_composeUploadHandlers as composeUploadHandlers,
@@ -23,6 +23,9 @@ import { formatDistanceToNow } from "date-fns";
 import { Analytics } from "~/componets/ui/analytics";
 import { getAllUsers } from "~/utils/user.server";
 import { MemberAvatar } from "~/features/member/components/members-avatar";
+import { useState } from "react";
+import ProjectModal from "~/componets/project-modal";
+import TaskModal from "~/componets/task-modal";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
     await authenticator.isAuthenticated(request, {
@@ -36,6 +39,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     const completedTask = await getTotalCompleteTask(id, null);
     const inCompletedTask = await getTotalInCompleteTask(id, null);
     const overDueTask = await getTotalOverDueTask(id, null);
+    const userData = await getAllUsers();
 
     let projects, tasks;
     if(id){
@@ -43,7 +47,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
       tasks = await getTask(request);
     }
 
-    return { workspaceId, projects, tasks, members, totalTask, assignee, completedTask, inCompletedTask, overDueTask };
+    return { workspaceId, userData, projects, tasks, members, totalTask, assignee, completedTask, inCompletedTask, overDueTask };
   };
 
   export const action = async ({ request, params }: ActionFunctionArgs) => {
@@ -188,16 +192,29 @@ interface ProjectListProps {
 }
 
 export const ProjectList = ({ data, total }: ProjectListProps) => {
-  // const { open: createProject } = useCreateProjectsModal();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const openModal = () => {
+    searchParams.set("edit-task", "true");
+    setSearchParams(searchParams);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    searchParams.delete("edit-task");
+    setSearchParams(searchParams);
+  };
   const workspaceId = useWorkspaceId();
   return (
       <div className="flex flex-col gap-y-4 col-span-1">
+        <ProjectModal isOpen={isModalOpen} onClose={closeModal} />
           <div className="bg-white border rounded-lg p-4">
               <div className="flex items-center justify-between">
                   <p className="text-lg font-semibold">
                       Projects ({total})
                   </p>
-                  <Button variant="default" size="icon" >
+                  <Button variant="default" size="icon" onClick={openModal} >
                       <PlusIcon className="size-4 text-neutral-400" />
                   </Button>
               </div>
@@ -239,16 +256,37 @@ interface TaskListProps {
 }
 
 export const TaskList = ({ data, total }: TaskListProps) => {
-  // const { open: createTask } = useCreateTasksModal();
+ 
+  const { projects } = useLoaderData();
+  const userData = useLoaderData();
   const workspaceId = useWorkspaceId();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const openModal = () => {
+    searchParams.set("create-task", "true");
+    setSearchParams(searchParams);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    searchParams.delete("create-task");
+    setSearchParams(searchParams);
+  };
   return (
       <div className="flex flex-col gap-y-4 col-span-1">
+         <TaskModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        projects={projects}
+        members={userData}
+      />
           <div className="bg-muted rounded-lg p-4">
               <div className="flex items-center justify-between">
                   <p className="text-lg font-semibold">
                       Tasks ({total})
                   </p>
-                  <Button variant="secondary" size="icon" >
+                  <Button variant="secondary" size="icon" onClick={openModal}>
                       <PlusIcon className="size-4 text-neutral-400" />
                   </Button>
               </div>

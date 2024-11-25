@@ -32,6 +32,8 @@ const Tasks = () => {
   const { projectId } = useParams();
   const id = Number(projectId);
 
+  console.log(projects)
+
   const project = projects.find((proj) => proj.id === id);
   return (
     <div className="h-full flex flex-col">

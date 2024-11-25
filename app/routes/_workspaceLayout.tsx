@@ -3,7 +3,7 @@ import UserButton from "~/componets/user-button";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
 import { getUserSession } from "~/utils/session.server";
 import WorkspaceSetting from "./_workspaceLayout.workspaces.$workspaceId.settings";
-import { getAllMemeber, getWorkspacesByUser } from "~/utils/workspace.server";
+import { getAllMemeber } from "~/utils/workspace.server";
 import { authenticator } from "~/utils/auth.server";
 
 

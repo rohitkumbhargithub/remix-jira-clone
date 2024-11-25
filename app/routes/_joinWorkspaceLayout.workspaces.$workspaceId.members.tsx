@@ -1,8 +1,8 @@
-import { LoaderFunction, redirect } from "@remix-run/node";
+import { ActionFunctionArgs, LoaderFunction, redirect } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { authenticator } from "~/utils/auth.server";
 import { getAllUsers } from "~/utils/user.server";
-import { getAllMemeber } from "~/utils/workspace.server";
+import { deleteMemberInWorkspace, getAllMemeber, updateAsMemberInWorkspace } from "~/utils/workspace.server";
 import { MembersList } from "~/workspaces/components/members-list";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
@@ -15,6 +15,25 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   if(!workspaceId) redirect("/");
   return {workspaceId, members, user}
 };
+
+
+export const action = async ({ request, params }) => {
+  const formData = await request.formData();
+  const memberId = formData.get("memberId");
+  const workspaceId = params.workspaceId;
+
+  if (formData.get("_method") === "DELETE"){
+    await deleteMemberInWorkspace(memberId, workspaceId, request);
+  }
+
+  if (formData.get("_method") === "PATCH"){
+    await updateAsMemberInWorkspace(memberId, workspaceId, request);
+  }
+
+
+  return { error: "Invalid action or missing data" };
+};
+
 
 const Memebers = () => {
   return (

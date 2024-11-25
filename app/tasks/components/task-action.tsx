@@ -26,8 +26,6 @@ export const TaskActions = ({ id, projectId, children }: TaskActionProps) => {
   const workspaceId = useWorkspaceId();
   const navigate = useNavigate();
 
-  // const { open } = useEditTasksModal();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
 

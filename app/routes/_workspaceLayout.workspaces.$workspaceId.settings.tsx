@@ -26,6 +26,7 @@ import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { generateInviteCode } from "~/lib/utils";
 import { DeleteProject } from "~/utils/project.server";
+import { Toaster } from "~/components/ui/sonner";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
@@ -37,7 +38,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
   const workspaceId = params.workspaceId;
-  // const workspaces = await getAllMemeber(request);
   const form = await request.clone().formData();
   
     const resetAction = form.get("reset");
@@ -132,6 +132,7 @@ const WorkspaceSetting = ({ workspace }) => {
 
   return (
     <div className="w-full lg:max-w-xl">
+      <Toaster/>
       <UpdateWorkspaceForm
         initialValues={workspaceId}
         workspace={workspace}
