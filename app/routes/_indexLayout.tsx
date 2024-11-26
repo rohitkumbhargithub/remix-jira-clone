@@ -9,7 +9,6 @@ import { getUserSession } from "~/utils/session.server";
 import { CreateProjectModal } from "~/projects/context/create-project-modal";
 import { getProjectsByWorkspace } from "~/utils/project.server";
 import { authenticator } from "~/utils/auth.server";
-import { authenticatorGithub } from "~/utils/github-strategy.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,17 +19,24 @@ export const meta: MetaFunction = () => {
 
 export const loader = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
-      failureRedirect: "/sign-in"
-    });
+    failureRedirect: "/sign-in",
+  });
 
-  const user = await getUserSession(request); 
+  const user = await getUserSession(request);
 
   const workspaceId = params.workspaceId;
   const members = await getAllMemeber(request);
   const membersByWorkspace = await getMemeberByWorkspace(request, user.id);
-  const workspacesByMembers = membersByWorkspace.map(item => item.workspace);
+  const workspacesByMembers = membersByWorkspace.map((item) => item.workspace);
+  const result = members.map(({ workspace, userId }) => ({
+    workspace,
+    userId,
+  }));
 
-  const id = Number(workspaceId)
+  const matchedItems = result.filter((item) => item.userId === user.id);
+  const workspaces = matchedItems.map((item) => item.workspace);
+
+  const id = Number(workspaceId);
 
   let projects;
 
@@ -38,29 +44,24 @@ export const loader = async ({ request, params }) => {
     projects = await getProjectsByWorkspace(request, id);
   }
 
-  const loggedInUserId = user.id;
-  const member = members
-    .filter(member => member.userId === loggedInUserId)
-    .map(member => member.workspaceId);
-  
-  const workspace = members
-    .filter(member => member.userId === loggedInUserId)
-    .map(member => member.workspace);
-
-  return { user, workspace, workspaceId, member, projects, workspacesByMembers }; 
+  return { user, workspaceId, projects, workspacesByMembers, workspaces };
 };
 
 export default function IndexLayout() {
-  const { workspace, workspaceId, projects, workspacesByMembers } = useLoaderData() || {};
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(Number(workspaceId));
+  const { workspaceId, projects, workspacesByMembers, workspaces } =
+    useLoaderData() || {};
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(
+    Number(workspaceId)
+  );
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (workspace.length === 0) {
+    if (workspaces.length === 0) {
       navigate(`/workspaces/create`);
     } else {
       setSelectedWorkspaceId(workspaceId);
+      navigate(`/workspaces/${workspaces[0].id}`);
     }
   }, [workspaceId, navigate]);
 
@@ -71,10 +72,10 @@ export default function IndexLayout() {
         <CreateProjectModal />
         <div className="flex w-full h-full">
           <div className="flex left-0 top-0 hidden lg:block lg:w-[350px] f-full overflow-y-auto">
-            <Sidebar 
-              workspaces={workspacesByMembers} 
-              selectedWorkspaceId={selectedWorkspaceId} 
-              setSelectedWorkspaceId={setSelectedWorkspaceId} 
+            <Sidebar
+              workspaces={workspacesByMembers}
+              selectedWorkspaceId={selectedWorkspaceId}
+              setSelectedWorkspaceId={setSelectedWorkspaceId}
             />
           </div>
           <div className="lg w-full">

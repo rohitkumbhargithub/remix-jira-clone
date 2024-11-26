@@ -7,6 +7,7 @@ export const JoinWorkspaceForm = ({initialValues, workspace}) => {
     const id = parseInt(initialValues.workspaceId, 10);
     const workspaceData = Array.isArray(workspace) ? workspace.find((ws) => ws.id === id) : null;
 
+    console.log(workspace)
    
     return (
         <Card className="w-full h-full border-none shadow-none">

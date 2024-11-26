@@ -1,16 +1,9 @@
-import type { ActionFunctionArgs, LoaderFunction, MetaFunction, UploadHandler } from "@remix-run/node";
+import type { LoaderFunction, MetaFunction } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
-import { createWorkspaces, getWorkspacesByUser } from "~/utils/workspace.server";
-import {
-  json,
-  unstable_composeUploadHandlers as composeUploadHandlers,
-  unstable_createMemoryUploadHandler as createMemoryUploadHandler,
-  unstable_parseMultipartFormData as parseMultipartFormData,
-  redirect,
-} from "@remix-run/node";
-import { uploadImage } from "~/utils/cloudinary.server";
+import { getAllMemeber } from "~/utils/workspace.server";
+
 import IndexLayout from "./_indexLayout";
-import { generateInviteCode } from "~/lib/utils";
+
 
 export const meta: MetaFunction = () => {
   return [
@@ -25,13 +18,19 @@ export const loader: LoaderFunction = async({ request }) => {
     failureRedirect: "/sign-in"
   });
 
-  const workspace = await getWorkspacesByUser(request);
+  const members = await getAllMemeber(request);
+  const result = members.map(({ workspace, userId }) => ({
+    workspace,
+    userId
+  }));
 
-  return { user, workspace };
+  const matchedItems = result.filter(item => item.userId === user.id);
+  const workspaces = matchedItems.map(item => item.workspace);
+
+  return { user, workspaces };
 }
 
 export default function Index() {
-
 
   return (
     <>

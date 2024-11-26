@@ -11,7 +11,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
   })
   const workspaceId = params.workspaceId; 
   const members = await getAllMemeber(request);
-  const user = await getAllUsers(request);
+  const user = await getAllUsers();
   if(!workspaceId) redirect("/");
   return {workspaceId, members, user}
 };

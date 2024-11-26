@@ -31,8 +31,6 @@ export const CreateWorkspaceForm = ({ onCancel, actionUrl }: CreateWorkspaceForm
           inputRef.current.value = ""; 
         }
   
-        toast.success("Workspace Created!")
-  
       }
     }, [navigation.state, isSubmitted]);
   }catch(error){

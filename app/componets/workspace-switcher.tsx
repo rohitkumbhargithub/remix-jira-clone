@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import Modal from "./modal";
 
 export const WorkspaceSwitcher = () => {
-  const { workspace } = useLoaderData();
+  const { workspaces } = useLoaderData();
   const workspaceId = useWorkspaceId();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +58,7 @@ export const WorkspaceSwitcher = () => {
           <SelectValue placeholder="No workspace selected" />
         </SelectTrigger>
         <SelectContent>
-          {workspace.map((workspaceItem) => (
+          {workspaces.map((workspaceItem) => (
             <SelectItem key={workspaceItem.id} value={workspaceItem.id.toString()}>
               <div className="flex justify-start items-center gap-1 font-medium overflow-hidden">
                 <WorkspaceAvatar

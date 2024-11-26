@@ -15,8 +15,9 @@ import {
     unstable_parseMultipartFormData as parseMultipartFormData,
   } from "@remix-run/node";
 import { uploadImage } from "~/utils/cloudinary.server";
-import { createProject, getProjectsByWorkspace } from "~/utils/project.server";
+import { getProjectsByWorkspace } from "~/utils/project.server";
 import { authenticator } from "~/utils/auth.server";
+import { generateInviteCode } from "~/lib/utils";
 
 
 export const meta: MetaFunction = () => {
@@ -39,16 +40,15 @@ export const loader = async ({ request, params }) => {
 
   const projects = await getProjectsByWorkspace(request, id);
   
-  const loggedInUserId = user.id;
-  const member = members
-    .filter(member => member.userId === loggedInUserId)
-    .map(member => member.workspaceId);
-  
-  const workspace = members
-    .filter(member => member.userId === loggedInUserId)
-    .map(member => member.workspace);
+  const result = members.map(({ workspace, userId }) => ({
+    workspace,
+    userId
+  }));
 
-  return { user, workspace, workspaceId, member, projects, projectId }; 
+  const matchedItems = result.filter(item => item.userId === user.id);
+  const workspaces = matchedItems.map(item => item.workspace);
+
+  return { user, workspaces, workspaceId, projects, projectId }; 
 };
 
 
@@ -56,7 +56,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.clone().formData();
   let imageUrl = form.get("img");
   const name = form.get("name");
-  const workspaceId = params.workspaceId;
   const inviteCode = generateInviteCode(6);
   
   if (!name) {
@@ -91,22 +90,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     imageUrl,
     inviteCode,
   };
-
-  // const project = {
-  //   name,
-  //   imageUrl,
-  // };
-  
-  
-
-  //   try {
-  //     const newProject = await createProject(workspaceId, project, request);
-  //     return redirect(`/workspaces/${workspaceId}/projects/${newProject.id}`);
-  //   } catch (error) {
-  //     console.error("Error creating workspace:", error);
-  //     return json({ error: error.message }, { status: 400 });
-  //   }
-  
   
  
   try {

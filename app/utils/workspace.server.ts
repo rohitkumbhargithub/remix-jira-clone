@@ -63,7 +63,7 @@ export const createWorkspaces = async (workspace: WorkspaceForm, request: Reques
         throw new Error("User must be logged in to view workspaces.");
     }
 
-    const workspaces = await prisma.workspace.findMany();
+    const workspaces = await prisma.workspace.findMany({});
     return workspaces;
 };
 

@@ -21,6 +21,7 @@ import {
   getProjectsByWorkspace,
   UpdateProject,
 } from "~/utils/project.server";
+import { Toaster } from "sonner";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
@@ -45,7 +46,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       await DeleteProject(Number(projectId), request);
       return redirect(`/workspaces/${workspaceId}`);
     } catch (error) {
-      console.error("Error deleting workspace:", error);
       return json({ error: "Failed to delete project." }, { status: 400 });
     }
   }
@@ -79,13 +79,9 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const project = { name, imageUrl };
 
   try {
-    const updateProject = await UpdateProject(project, projectId, request);
-    if (updateProject) {
-      return json({ success: "Project Updated" }, { status: 200 });
-    }
+    await UpdateProject(project, projectId, request);
     return redirect(`/workspaces/${workspaceId}/projects/${projectId}`);
   } catch (error) {
-    console.error("Error updating workspace:", error);
     return json({ error: error.message }, { status: 400 });
   }
 };

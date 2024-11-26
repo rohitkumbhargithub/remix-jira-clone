@@ -19,7 +19,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const joinedWorkspace = await getJoinedWorkspace(params, request);
 
   if (joinedWorkspace) {
-    // Redirect to the index route with the workspace ID
     return redirect(`/workspaces/${joinedWorkspace[0].id}`);
   }
 
