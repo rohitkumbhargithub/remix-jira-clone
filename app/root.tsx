@@ -10,7 +10,6 @@ import {
 import type { LinksFunction } from "@remix-run/node";
 
 import './tailwind.css';
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect } from "react";
 import { Toaster } from "sonner";

@@ -21,12 +21,12 @@ import {
   getProjectsByWorkspace,
   UpdateProject,
 } from "~/utils/project.server";
-import { Toaster } from "sonner";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
     failureRedirect: "/sign-in",
   });
+
 
   const workspaceId = params.workspaceId;
   const projectId = params.projectId;
