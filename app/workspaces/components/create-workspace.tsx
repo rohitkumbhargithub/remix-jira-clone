@@ -1,6 +1,6 @@
 import { ImageIcon } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
-import { Form, useNavigation } from "@remix-run/react";
+import React, { useRef, useState, useEffect } from "react";
+import { Form, useFetcher, useNavigation } from "@remix-run/react";
 import { toast } from "sonner";
 import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
@@ -20,6 +20,36 @@ export const CreateWorkspaceForm = ({ onCancel, actionUrl }: CreateWorkspaceForm
   const navigation = useNavigation();
   const isPending = navigation.state === "submitting";
 
+  const fetcher = useFetcher();
+
+  // Handle toast notifications based on the response type
+  React.useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+      const { type, message, workspaceId } = fetcher.data;
+
+      switch (type) {
+        case "success":
+          toast.success(message);
+          if (workspaceId) {
+            window.location.href = `/workspaces/${workspaceId}`;
+          }
+          break;
+
+        case "error":
+          toast.error(message);
+          break;
+
+        default:
+          toast("Something unexpected happened!", { style: { background: "gray" } });
+          break;
+      }
+    }
+  }, [fetcher.state, fetcher.data]);
+
+  const handleSubmit = () => {
+    fetcher.submit({ name: "My Workspace" }, { method: "post" });
+  };
+
   try{
     useEffect(() => {
       if (navigation.state === "idle" && isSubmitted) {
@@ -36,10 +66,6 @@ export const CreateWorkspaceForm = ({ onCancel, actionUrl }: CreateWorkspaceForm
   }catch(error){
     toast.error("Error to create Workspace!");
   }
-
-  const handleSubmit = () => {
-    setIsSubmitted(true); 
-  };
 
   const [uploaded, setUploaded] = useState(false);
   const handleUpload = (event) => {
@@ -71,7 +97,7 @@ export const CreateWorkspaceForm = ({ onCancel, actionUrl }: CreateWorkspaceForm
       </div>
 
       <div className="p-3">
-        <Form method="post" encType="multipart/form-data" action={actionUrl} onSubmit={handleSubmit}>
+        <Form method="post" encType="multipart/form-data" action={actionUrl}>
           <div className="flex flex-col gap-y-6">
             <div>
               <label htmlFor="workspaceName" className="font-bold-sm">
@@ -156,8 +182,9 @@ export const CreateWorkspaceForm = ({ onCancel, actionUrl }: CreateWorkspaceForm
 
                     <Button
                        type="submit"
-                       name="workspace"
+                       name="My Workspace"
                        size="lg"  
+                       onClick={handleSubmit}
                        disabled={isPending} 
                        
                     >Create Workspace</Button>

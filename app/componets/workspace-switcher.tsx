@@ -1,4 +1,10 @@
-import { redirect, useLoaderData, useNavigate, useSearchParams } from "@remix-run/react";
+import {
+  redirect,
+  useLoaderData,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "@remix-run/react";
 import { RiAddCircleFill } from "react-icons/ri";
 import { WorkspaceAvatar } from "~/workspaces/workspace-avatar";
 import {
@@ -8,25 +14,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { useWorkspaceId } from "~/hooks/user-workspaceId";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Modal from "./modal";
 
 export const WorkspaceSwitcher = () => {
   const { workspaces } = useLoaderData();
-  const workspaceId = useWorkspaceId();
+  const {workspaceId} = useParams();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(workspaceId);
-
-  useEffect(() => {
-    setSelectedWorkspaceId(workspaceId);
-  }, [workspaceId]);
+  
 
   const openModal = () => {
-    // const newUrl = `/workspaces/${workspaceId}`;
-    // window.location.href = newUrl;
     searchParams.set("create-workspace", "true");
     setSearchParams(searchParams);
     setIsModalOpen(true);
@@ -39,7 +38,6 @@ export const WorkspaceSwitcher = () => {
   };
 
   const onSelect = (id: string) => {
-    // Set workspaceId in the URL to keep state when refreshing
     navigate(`/workspaces/${id}`);
   };
 
@@ -53,19 +51,20 @@ export const WorkspaceSwitcher = () => {
           className="size-5 text-neutral-500 cursor-pointer hover:opacity-75 transition"
         />
       </div>
-      <Select onValueChange={onSelect} value={selectedWorkspaceId}>
+      <Select onValueChange={onSelect} value={workspaceId}>
         <SelectTrigger className="w-full bg-neutral-200 font-medium p-1">
           <SelectValue placeholder="No workspace selected" />
         </SelectTrigger>
         <SelectContent>
-          {workspaces.map((workspaceItem) => (
-            <SelectItem key={workspaceItem.id} value={workspaceItem.id.toString()}>
+          {workspaces?.map((workspace) => (
+            <SelectItem key={workspace.id} value={workspace.id.toString()}>
               <div className="flex justify-start items-center gap-1 font-medium overflow-hidden">
                 <WorkspaceAvatar
-                  name={workspaceItem.name}
-                  image={workspaceItem.imageUrl}
+                  classname=""
+                  name={workspace.name}
+                  image={workspace.imageUrl}
                 />
-                <span className="truncate m-2">{workspaceItem.name}</span>
+                <span className="truncate m-2">{workspace.name}</span>
               </div>
             </SelectItem>
           ))}

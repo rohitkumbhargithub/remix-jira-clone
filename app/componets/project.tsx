@@ -1,18 +1,16 @@
 import { useLoaderData, useLocation, useParams, useSearchParams } from "@remix-run/react";
 import { Link } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiAddCircleFill } from "react-icons/ri";
 import { ProjectAvatar } from "~/projects/components/project-avatar";
 import ProjectModal from "./project-modal";
 import { cn } from "~/lib/utils";
 
 
+
 const Project = () => {
-  const { projects = [] } = useLoaderData();
-  const { workspaceId } = useParams();
-  const filteredProjects = workspaceId
-    ? projects.filter((project) => project.workspaceId === parseInt(workspaceId))
-    : projects;
+  const {workspaceId} = useParams();
+  const {projects} = useLoaderData() || [];
 
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,7 +39,7 @@ const Project = () => {
             className="size-5 text-neutral-500 cursor-pointer hover:opacity-75 transition"
           />
         </div>
-        {filteredProjects.map((project) => {
+        {projects?.map((project) => {
           const href = `/workspaces/${workspaceId}/projects/${project.id}`;
           const isActive = location.pathname === href;
 

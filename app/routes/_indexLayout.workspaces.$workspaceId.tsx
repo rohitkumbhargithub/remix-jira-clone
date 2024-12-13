@@ -8,6 +8,7 @@ import { createWorkspaces, getAllMemeber } from "~/utils/workspace.server";
 import {
   Link,
   redirect,
+  useFetcher,
   useLoaderData,
   useParams,
   useSearchParams,
@@ -39,9 +40,10 @@ import { formatDistanceToNow } from "date-fns";
 import { Analytics } from "~/componets/ui/analytics";
 import { getAllUsers } from "~/utils/user.server";
 import { MemberAvatar } from "~/features/member/components/members-avatar";
-import { useState } from "react";
+import React, { useState } from "react";
 import ProjectModal from "~/componets/project-modal";
 import TaskModal from "~/componets/task-modal";
+import { toast } from "sonner";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
@@ -122,7 +124,11 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
     try {
       const newWorkspace = await createWorkspaces(workspace, request);
-      return redirect(`/workspaces/${newWorkspace?.id}`);
+      return json({
+        type: "success",
+        message: "Workspace created successfully!",
+        workspaceId: newWorkspace?.id,
+      });
     } catch (error) {
       console.error("Error creating workspace:", error);
       return json({ error: error.message }, { status: 400 });

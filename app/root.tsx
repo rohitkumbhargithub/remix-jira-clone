@@ -32,12 +32,6 @@ export const links: LinksFunction = () => [
 
 
 export function Layout({ children }: { children: React.ReactNode }) {
-  const location = useLocation();
-
-  useEffect(() => {
-    
-    console.log("Current Path:", location.pathname);
-  }, [location]);
 
   return (
     <html lang="en">

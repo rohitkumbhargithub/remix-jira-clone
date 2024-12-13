@@ -91,24 +91,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     imageUrl,
     inviteCode,
   };
-
-  // const project = {
-  //   name,
-  //   imageUrl,
-  // };
-  
-  
-
-  //   try {
-  //     const newProject = await createProject(workspaceId, project, request);
-  //     return redirect(`/workspaces/${workspaceId}/projects/${newProject.id}`);
-  //   } catch (error) {
-  //     console.error("Error creating workspace:", error);
-  //     return json({ error: error.message }, { status: 400 });
-  //   }
-  
-  
- 
+   
   try {
     const newWorkspace = await createWorkspaces(workspace, request);
     return redirect(`/workspaces/${newWorkspace?.id}`);
