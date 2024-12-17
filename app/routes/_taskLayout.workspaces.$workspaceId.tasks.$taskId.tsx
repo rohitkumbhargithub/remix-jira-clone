@@ -54,7 +54,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   if(deleteAction === "delete"){
     try {
       await deleteTask(Number(taskId), request); 
-      return redirect(`/workspaces/${workspaceId}/tasks`);
+      return redirect(`/workspaces/${workspaceId}`);
     } catch (error) {
       console.error("Error deleting task:", error);
       return json({ error: "Failed to delete task" }, { status: 500 });

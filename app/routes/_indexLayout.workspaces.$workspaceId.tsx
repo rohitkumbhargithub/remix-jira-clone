@@ -8,7 +8,6 @@ import { createWorkspaces, getAllMemeber } from "~/utils/workspace.server";
 import {
   Link,
   redirect,
-  useFetcher,
   useLoaderData,
   useParams,
   useSearchParams,
@@ -40,10 +39,9 @@ import { formatDistanceToNow } from "date-fns";
 import { Analytics } from "~/componets/ui/analytics";
 import { getAllUsers } from "~/utils/user.server";
 import { MemberAvatar } from "~/features/member/components/members-avatar";
-import React, { useState } from "react";
+import { useState } from "react";
 import ProjectModal from "~/componets/project-modal";
 import TaskModal from "~/componets/task-modal";
-import { toast } from "sonner";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {

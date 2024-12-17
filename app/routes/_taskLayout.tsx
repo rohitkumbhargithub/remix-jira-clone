@@ -48,7 +48,15 @@ export const loader = async ({ request, params }) => {
     .filter(member => member.userId === loggedInUserId)
     .map(member => member.workspace);
 
-  return { user, workspace, workspaceId, member, projects, projectId }; 
+    const result = members.map(({ workspace, userId }) => ({
+      workspace,
+      userId,
+    }));
+  
+    const matchedItems = result.filter((item) => item.userId === user.id);
+    const workspaces = matchedItems.map((item) => item.workspace);
+
+  return { user, workspace, workspaceId, member, projects, projectId, workspaces }; 
 };
 
 

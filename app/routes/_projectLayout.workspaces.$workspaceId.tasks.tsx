@@ -26,15 +26,13 @@ export const loader = async ({ request, params }) => {
 
 const Tasks = () => {
   const userData = useLoaderData();
-  const { projects, members, tasks } = useLoaderData();
+  const { projects, tasks } = useLoaderData();
   const {workspaceId} = useParams();
   const filteredTasks = tasks.filter(task => task.workspaceId === Number(workspaceId));
   const { projectId } = useParams();
   const id = Number(projectId);
 
-  console.log(projects)
-
-  const project = projects.find((proj) => proj.id === id);
+  // const project = projects.find((proj) => proj.id === id);
   return (
     <div className="h-full flex flex-col">
       <TaskViewSwitcher projects={projects} members={userData} tasks={filteredTasks} hideProjectFilter />
