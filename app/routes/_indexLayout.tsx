@@ -7,7 +7,7 @@ import { getAllMemeber, getMemeberByWorkspace } from "~/utils/workspace.server";
 import { useEffect, useState } from "react";
 import { getUserSession } from "~/utils/session.server";
 import { CreateProjectModal } from "~/projects/context/create-project-modal";
-import { getProjectsByWorkspace } from "~/utils/project.server";
+import { getProjects, getProjectsByWorkspace } from "~/utils/project.server";
 import { authenticator } from "~/utils/auth.server";
 
 export const meta: MetaFunction = () => {
@@ -44,11 +44,15 @@ export const loader = async ({ request, params }) => {
     projects = await getProjectsByWorkspace(request, id);
   }
 
-  return { user, workspaceId, projects, workspacesByMembers, workspaces };
+  const getAllProjects = await getProjects(request);
+
+
+
+  return { user, workspaceId, projects, workspacesByMembers, workspaces, getAllProjects };
 };
 
 export default function IndexLayout() {
-  const { workspaceId, projects, workspacesByMembers, workspaces } =
+  const { workspaceId, projects, workspacesByMembers, workspaces, getAllProjects } =
     useLoaderData() || {};
   const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(
     Number(workspaceId)
@@ -59,8 +63,9 @@ export default function IndexLayout() {
   useEffect(() => {
     if (workspaces.length === 0) {
       navigate(`/workspaces/create`);
+    } else if(workspaceId) {
+      navigate(`/workspaces/${workspaceId}`);
     } else {
-      setSelectedWorkspaceId(workspaceId);
       navigate(`/workspaces/${workspaces[0].id}`);
     }
   }, [workspaceId, navigate]);
@@ -73,16 +78,14 @@ export default function IndexLayout() {
         <div className="flex w-full h-full">
           <div className="flex left-0 top-0 hidden lg:block lg:w-[350px] f-full overflow-y-auto">
             <Sidebar
-              workspaces={workspacesByMembers}
-              selectedWorkspaceId={selectedWorkspaceId}
-              setSelectedWorkspaceId={setSelectedWorkspaceId}
+              projects={getAllProjects}
             />
           </div>
           <div className="lg w-full">
             <div className="mx-auto max-w-screen-2xl h-full">
               <Nav />
               <main className="h-full py-8 px-6 flex flex-col">
-                <Outlet context={{ projects: projects, selectedWorkspaceId }} />
+                <Outlet />
               </main>
             </div>
           </div>

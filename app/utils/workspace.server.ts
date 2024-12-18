@@ -1,115 +1,114 @@
-import { generateInviteCode } from '~/lib/utils';
-import { prisma } from './prisma.server';
-import { getUserSession } from './session.server'; 
-import { json, Params } from '@remix-run/react';
-import { redirect } from 'react-router';
+import { generateInviteCode } from "~/lib/utils";
+import { prisma } from "./prisma.server";
+import { getUserSession } from "./session.server";
+import { json, Params } from "@remix-run/react";
+import { redirect } from "react-router";
 
 type WorkspaceForm = {
-    id: string,
-    name: string,
-    imageUrl: string,
-    inviteCode: string;
-}
+  id: string;
+  name: string;
+  imageUrl: string;
+  inviteCode: string;
+};
 
 enum MemberRole {
-    ADMIN = "ADMIN",
-    MEMBER = "MEMBER",
-};
+  ADMIN = "ADMIN",
+  MEMBER = "MEMBER",
+}
 
-export const createWorkspaces = async (workspace: WorkspaceForm, request: Request) => {
-    const user = await getUserSession(request);
-  
-    if (!user) {
-      throw new Error("User must be logged in to create a workspace.");
-    }
-  
-    try{
-        const newWorkspace = await prisma.workspace.create({
-            data: {
-              name: workspace.name,
-              userId: user.id,
-              imageUrl: workspace.imageUrl,
-              inviteCode: workspace.inviteCode,
-            },
-          });
+export const createWorkspaces = async (
+  workspace: WorkspaceForm,
+  request: Request
+) => {
+  const user = await getUserSession(request);
 
-          
-        
-          const member = await prisma.member.create({
-            data: {
-              userId: user.id,
-              workspaceId: newWorkspace.id,
-              role: MemberRole.ADMIN,
-            },
-          });
-        
-          return {
-            id: newWorkspace.id,
-            name: workspace.name,
-            imageUrl: workspace.imageUrl,
-            inviteCode: workspace.inviteCode, // Return inviteCode
-            member: member.id,
-          };
-    }catch(error){
-        console.log(error)
-    }
-    
+  if (!user) {
+    throw new Error("User must be logged in to create a workspace.");
+  }
+
+  const newWorkspace = await prisma.workspace.create({
+    data: {
+      name: workspace.name,
+      userId: user.id,
+      imageUrl: workspace.imageUrl,
+      inviteCode: workspace.inviteCode,
+    },
+  });
+
+  const member = await prisma.member.create({
+    data: {
+      userId: user.id,
+      workspaceId: newWorkspace.id,
+      role: MemberRole.ADMIN,
+    },
+  });
+
+  return {
+    id: newWorkspace.id,
+    name: workspace.name,
+    imageUrl: workspace.imageUrl,
+    inviteCode: workspace.inviteCode, // Return inviteCode
+    member: member.id,
   };
-
-
-  export const getAllWorkspaces = async (request: Request) => {
-    const user = await getUserSession(request);
-    if (!user) {
-        throw new Error("User must be logged in to view workspaces.");
-    }
-
-    const workspaces = await prisma.workspace.findMany({});
-    return workspaces;
 };
 
-  
+export const getAllWorkspaces = async (request: Request) => {
+  const user = await getUserSession(request);
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
+
+  const workspaces = await prisma.workspace.findMany({});
+  return workspaces;
+};
 
 export const getWorkspacesByUser = async (request: Request) => {
-    const user = await getUserSession(request);
-    if (!user) {
-        throw new Error("User must be logged in to view workspaces.");
-    }
+  const user = await getUserSession(request);
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
 
-    const workspaces = await prisma.workspace.findMany({
-        where: {
-            userId: user.id,
-        },
-    });
+  const workspaces = await prisma.workspace.findMany({
+    where: {
+      userId: user.id,
+    },
+  });
 
-    return workspaces;
+  return workspaces;
 };
 
 type WorkspaceId = {
   workspaceId: string | number;
-}
+};
 
-export const UpdateWorkspace = async (workspace: WorkspaceForm, workspaceId: WorkspaceId, request: Request) => {
-    const user = await getUserSession(request);
+export const UpdateWorkspace = async (
+  workspace: WorkspaceForm,
+  workspaceId: WorkspaceId,
+  request: Request
+) => {
+  const user = await getUserSession(request);
 
-    if (!user) {
-        throw new Error("User must be logged in to view workspaces.");
-    }
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
 
-    const updatedWorkspace = await prisma.workspace.update({
-        where: {
-          id: Number(workspaceId), 
-        },
-        data: {
-          name: workspace.name,      
-          imageUrl: workspace.imageUrl,  
-        },
-      });
+  const updatedWorkspace = await prisma.workspace.update({
+    where: {
+      id: Number(workspaceId),
+    },
+    data: {
+      name: workspace.name,
+      imageUrl: workspace.imageUrl,
+    },
+  });
 
-      return updatedWorkspace;
-}
+  return updatedWorkspace;
+};
 
-
-export const DeleteWorkspace = async(workspaceId: WorkspaceId, request: Request) => {
+export const DeleteWorkspace = async (
+  workspaceId: WorkspaceId,
+  request: Request
+) => {
   const user = await getUserSession(request);
   if (!user) {
     throw new Error("User must be logged in to view workspaces.");
@@ -120,8 +119,8 @@ export const DeleteWorkspace = async(workspaceId: WorkspaceId, request: Request)
   });
 
   await prisma.project.deleteMany({
-    where: { workspaceId: Number(workspaceId)}
-  })
+    where: { workspaceId: Number(workspaceId) },
+  });
 
   // Delete the Workspace
   const deleteWorkspace = await prisma.workspace.delete({
@@ -129,52 +128,57 @@ export const DeleteWorkspace = async(workspaceId: WorkspaceId, request: Request)
   });
 
   return deleteWorkspace;
-}
+};
 
-export const getAllMemeber = async(request: Request) => {
+export const getAllMemeber = async (request: Request) => {
   const user = await getUserSession(request);
   if (!user) {
     throw new Error("User must be logged in to view workspaces.");
   }
-  const workspace = await getAllWorkspaces(request)
+  const workspace = await getAllWorkspaces(request);
   const members = await prisma.member.findMany({
     where: {
-        workspaceId: workspace.id,
+      workspaceId: workspace.id,
     },
-    include:{
+    include: {
       workspace: true,
       user: true,
-    }
+    },
+  });
+  return members;
+};
 
-});
-return members;
-}
-
-export const getMemeberByWorkspace = async(request: Request, params: Params) => {
+export const getMemeberByWorkspace = async (
+  request: Request,
+  params: Params
+) => {
   const user = await getUserSession(request);
   const userId = params.userId;
   if (!user) {
     throw new Error("User must be logged in to view workspaces.");
   }
-  const workspace = await getAllWorkspaces(request)
+  const workspace = await getAllWorkspaces(request);
   const members = await prisma.member.findMany({
     where: {
-        workspaceId: workspace.id,
-        userId: user.id,
+      workspaceId: workspace.id,
+      userId: user.id,
     },
-    include:{
+    include: {
       workspace: true,
-    }
-
-});
-return members;
-}
+    },
+  });
+  return members;
+};
 
 type MemberId = {
   memberId: number;
-}
+};
 
-export const deleteMemberInWorkspace = async(memerId: MemberId, workspaceId: WorkspaceId, request: Request) => {
+export const deleteMemberInWorkspace = async (
+  memerId: MemberId,
+  workspaceId: WorkspaceId,
+  request: Request
+) => {
   const user = await getUserSession(request);
   if (!user) {
     throw new Error("User must be logged in to view workspaces.");
@@ -184,33 +188,37 @@ export const deleteMemberInWorkspace = async(memerId: MemberId, workspaceId: Wor
     where: {
       userId: Number(memerId),
       workspaceId: Number(workspaceId),
-    }
-  })
+    },
+  });
 
-  if (memberData[0].role === 'ADMIN') {
+  if (memberData[0].role === "ADMIN") {
     throw new Error("You can't delete");
   }
 
   const workspaceMemeber = await prisma.member.findMany({
     where: {
       userId: Number(memerId),
-    }
-  })
+    },
+  });
 
-  if(workspaceMemeber.length === 1){
+  if (workspaceMemeber.length === 1) {
     throw new Error("failed to delete");
   }
 
   const deleteMember = await prisma.member.delete({
     where: {
       id: memberData[0].id,
-    }
+    },
   });
 
   return deleteMember;
-}
+};
 
-export const updateAsMemberInWorkspace = async(memerId: MemberId, workspaceId: WorkspaceId, request: Request) => {
+export const updateAsMemberInWorkspace = async (
+  memerId: MemberId,
+  workspaceId: WorkspaceId,
+  request: Request
+) => {
   const user = await getUserSession(request);
   if (!user) {
     throw new Error("User must be logged in to view workspaces.");
@@ -220,16 +228,16 @@ export const updateAsMemberInWorkspace = async(memerId: MemberId, workspaceId: W
     where: {
       userId: Number(memerId),
       workspaceId: Number(workspaceId),
-    }
-  })
+    },
+  });
 
   const workspaceMemeber = await prisma.member.findMany({
     where: {
       userId: Number(memerId),
-    }
-  })
+    },
+  });
 
-  if(workspaceMemeber.length === 1){
+  if (workspaceMemeber.length === 1) {
     throw new Error("failed to update");
   }
 
@@ -244,27 +252,29 @@ export const updateAsMemberInWorkspace = async(memerId: MemberId, workspaceId: W
   //   });
   // }
 
-  if (memberData[0].role === 'ADMIN') {
+  if (memberData[0].role === "ADMIN") {
     throw new Error("failed to update");
   }
 
-
-  if (memberData[0].role === 'MEMBER'){
+  if (memberData[0].role === "MEMBER") {
     updateMember = await prisma.member.update({
       where: {
         id: memberData[0].id,
       },
       data: {
-        role: MemberRole.ADMIN
-      }
+        role: MemberRole.ADMIN,
+      },
     });
   }
 
-
   return updateMember;
-}
+};
 
-export const updateAsAdminInWorkspace = async(memerId: MemberId, workspaceId: WorkspaceId, request: Request) => {
+export const updateAsAdminInWorkspace = async (
+  memerId: MemberId,
+  workspaceId: WorkspaceId,
+  request: Request
+) => {
   const user = await getUserSession(request);
   if (!user) {
     throw new Error("User must be logged in to view workspaces.");
@@ -274,21 +284,20 @@ export const updateAsAdminInWorkspace = async(memerId: MemberId, workspaceId: Wo
     where: {
       userId: Number(memerId),
       workspaceId: Number(workspaceId),
-    }
-  })
+    },
+  });
 
   const updateMember = await prisma.member.update({
     where: {
       id: memberData[0].id,
     },
     data: {
-      role: MemberRole.ADMIN
-    }
+      role: MemberRole.ADMIN,
+    },
   });
 
   return updateMember;
-}
-
+};
 
 export const getJoinedWorkspace = async (params: Params, request: Request) => {
   const user = await getUserSession(request);
@@ -304,7 +313,10 @@ export const getJoinedWorkspace = async (params: Params, request: Request) => {
   });
 
   if (!workspace) {
-    return json({ error: "Invalid invite code or workspace ID" }, { status: 400 });
+    return json(
+      { error: "Invalid invite code or workspace ID" },
+      { status: 400 }
+    );
   }
 
   // Check if the user is already a member
@@ -349,51 +361,58 @@ export const getJoinedWorkspace = async (params: Params, request: Request) => {
   });
 
   if (!newMemberData) {
-    return json({ error: "Failed to add member to the workspace" }, { status: 500 });
+    return json(
+      { error: "Failed to add member to the workspace" },
+      { status: 500 }
+    );
   }
 
   // Update user's session with the new workspace
   const updatedUserSession = {
     ...user,
-    workspaces: Array.isArray(user.workspaces) ? [...user.workspaces, newMemberData.workspace] : [newMemberData.workspace],
+    workspaces: Array.isArray(user.workspaces)
+      ? [...user.workspaces, newMemberData.workspace]
+      : [newMemberData.workspace],
   };
 
   const getWorkspaces = (user) => {
-    return (user.workspaces || []).map(({ id, name, imageUrl, inviteCode, createdAt }) => ({
-      id,
-      name,
-      imageUrl,
-      inviteCode,
-      createdAt,
-    }));
+    return (user.workspaces || []).map(
+      ({ id, name, imageUrl, inviteCode, createdAt }) => ({
+        id,
+        name,
+        imageUrl,
+        inviteCode,
+        createdAt,
+      })
+    );
   };
 
   // Usage
   const workspaceData = getWorkspaces(updatedUserSession);
   return workspaceData;
-}
-
-
-
+};
 
 export const ResetCode = async (params: Params, request: Request) => {
   const user = await getUserSession(request);
   if (!user) {
     return json({ error: "User not authenticated" }, { status: 401 });
   }
-  
+
   const { workspaceId, inviteCode } = params;
 
   try {
     const workspace = await prisma.workspace.update({
       where: { id: Number(workspaceId), inviteCode },
-      data: { 
+      data: {
         inviteCode: generateInviteCode(6),
-      }
+      },
     });
 
     return json({ message: "Invite code updated successfully", workspace });
   } catch (error) {
-    return json({ error: "Failed to update invite code", details: error.message }, { status: 500 });
+    return json(
+      { error: "Failed to update invite code", details: error.message },
+      { status: 500 }
+    );
   }
 };

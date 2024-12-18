@@ -71,7 +71,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       const newWorkspace = await createWorkspaces(workspace, request);
       return redirect(`/workspaces/${newWorkspace?.id}`);
     } catch (error) {
-      console.error("Error creating workspace:", error);
       return json({ error: error.message }, { status: 400 });
     }
   };

@@ -19,7 +19,6 @@ import Modal from "./modal";
 
 export const WorkspaceSwitcher = () => {
   const { workspaces } = useLoaderData();
-  console.log(workspaces)
   const {workspaceId} = useParams();
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);

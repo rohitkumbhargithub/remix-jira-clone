@@ -50,6 +50,19 @@ export const createProject = async (params: Params, project: ProjectForm, reques
     return getProjects;
   }
 
+  export const getProjects = async (request: Request) => {
+    const user = await getUserSession(request);
+
+    if (!user) {
+      throw new Error("User must be logged in to create a workspace.");
+    }
+
+    const getProjects = await prisma.project.findMany({
+
+    })
+    return getProjects;
+  }
+
   type ProjectId = {
     projectId: string | number;
   }

@@ -20,36 +20,6 @@ export const CreateWorkspaceForm = ({ onCancel, actionUrl }: CreateWorkspaceForm
   const navigation = useNavigation();
   const isPending = navigation.state === "submitting";
 
-  const fetcher = useFetcher();
-
-  // Handle toast notifications based on the response type
-  React.useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
-      const { type, message, workspaceId } = fetcher.data;
-
-      switch (type) {
-        case "success":
-          toast.success(message);
-          if (workspaceId) {
-            window.location.href = `/workspaces/${workspaceId}`;
-          }
-          break;
-
-        case "error":
-          toast.error(message);
-          break;
-
-        default:
-          toast("Something unexpected happened!", { style: { background: "gray" } });
-          break;
-      }
-    }
-  }, [fetcher.state, fetcher.data]);
-
-  const handleSubmit = () => {
-    fetcher.submit({ name: "My Workspace" }, { method: "post" });
-  };
-
   try{
     useEffect(() => {
       if (navigation.state === "idle" && isSubmitted) {
@@ -184,7 +154,6 @@ export const CreateWorkspaceForm = ({ onCancel, actionUrl }: CreateWorkspaceForm
                        type="submit"
                        name="My Workspace"
                        size="lg"  
-                       onClick={handleSubmit}
                        disabled={isPending} 
                        
                     >Create Workspace</Button>

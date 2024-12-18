@@ -104,6 +104,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
 
 export default function ProjectLayout() {
+  const {projects } = useLoaderData() || [];
   return (
     <>
       <div className="min-h-screen">
@@ -111,7 +112,7 @@ export default function ProjectLayout() {
         <CreateProjectModal/>
         <div className="flex w-full h-full">
           <div className="flex left-0 top-0 hidden lg:block lg:w-[350px] f-full overflow-y-auto">
-            <Sidebar />
+            <Sidebar projects={projects} />
           </div>
           <div className="lg w-full">
             <div className="mx-auto max-w-screen-2xl h-full">
