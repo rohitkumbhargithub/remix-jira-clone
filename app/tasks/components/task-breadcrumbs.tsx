@@ -1,11 +1,11 @@
-import Link from "next/link";
 import { ProjectAvatar } from "../../projects/components/project-avatar";
-
-import { Task } from "../types";
 import { ChevronRightIcon, TrashIcon } from "lucide-react";
+import { Link } from "@remix-run/react";
+import { Task } from "../types";
 import { useConfirm } from "~/features/hooks/useConfirm";
 import { Button } from "~/components/ui/button";
 import { Form, useFetcher } from "@remix-run/react";
+import { useWorkspaceId } from "~/hooks/user-workspaceId";
 
 interface TaskBreadcrumbsProps {
   project: any;
@@ -19,12 +19,12 @@ export const TaskBreadcrumbs = ({
   actionUrl,
 }: TaskBreadcrumbsProps) => {
   const fetcher = useFetcher();
+  const workspaceId = useWorkspaceId();
   const [ConfirmDialog, confirm] = useConfirm(
     "Delete Task?",
     "This action can't be undone.",
     "destructive"
   );
-  
 
   const handleDeleteTask = async (event) => {
     event.preventDefault();
@@ -40,14 +40,16 @@ export const TaskBreadcrumbs = ({
       <ConfirmDialog />
       <ProjectAvatar name={project.name} image={project.imageUrl} />
       <p className="text-sm lg:text-lg font-semibold text-muted-foreground hover:opacity-75 transition">
-        {project.name}
+        <Link to={`/workspaces/${workspaceId}/projects/${task.projectId}`}>
+          {project.name}
+        </Link>
       </p>
       <ChevronRightIcon className="size-4 lg:size-5 text-muted-foreground" />
       <p className="text-sm lg:text-lg font-semibold">{task.name}</p>
-      <Form method="post" action={actionUrl}>
+      <Form method="post" action={actionUrl} className="ml-auto">
         <Button
           onClick={handleDeleteTask}
-          className="ml-auto"
+          className=""
           name="delete"
           value="delete"
           variant="destructive"

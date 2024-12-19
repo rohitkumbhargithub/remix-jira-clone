@@ -76,6 +76,7 @@ const TaskId = () => {
   const taskIdData = taskId.taskId;
   const getTaskById = (id) => tasks.find(task => task.id === id);
   const data = getTaskById(Number(taskIdData));
+  console.log(data)
   return (
     <div className="flex flex-col">
             <TaskBreadcrumbs project={data.project} task={data} actionUrl={`/workspaces/${workspaceId}/tasks/${taskIdData}`} />

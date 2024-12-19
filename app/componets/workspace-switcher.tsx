@@ -1,5 +1,4 @@
 import {
-  redirect,
   useLoaderData,
   useNavigate,
   useParams,

@@ -86,10 +86,9 @@ export const EditTaskForm = ({
   );
 
   const handleDueDateChange = (selectedDate: any) => {
-    // Ensure the selectedDate is valid and update the state
+
     if (selectedDate) {
-      setDate(new Date(selectedDate)); // Convert if needed
-    }
+      setDate(new Date(selectedDate)); 
   };
 
   const handleAssigneeChange = (id: string) => {
@@ -272,7 +271,7 @@ export const EditTaskForm = ({
               Cancel
             </Button>
 
-            <Button type="submit" name="task" size="lg" onClick={close}>
+            <Button type="submit" name="task" size="lg" onClick={onCancel}>
               Save the changes
             </Button>
           </div>

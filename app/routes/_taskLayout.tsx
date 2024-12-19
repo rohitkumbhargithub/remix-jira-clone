@@ -15,7 +15,7 @@ import {
     unstable_parseMultipartFormData as parseMultipartFormData,
   } from "@remix-run/node";
 import { uploadImage } from "~/utils/cloudinary.server";
-import { createProject, getProjectsByWorkspace } from "~/utils/project.server";
+import { createProject, getProjects, getProjectsByWorkspace } from "~/utils/project.server";
 import { authenticator } from "~/utils/auth.server";
 
 
@@ -55,8 +55,9 @@ export const loader = async ({ request, params }) => {
   
     const matchedItems = result.filter((item) => item.userId === user.id);
     const workspaces = matchedItems.map((item) => item.workspace);
+    const getAllProjects = await getProjects(request);
 
-  return { user, workspace, workspaceId, member, projects, projectId, workspaces }; 
+  return { user, workspace, workspaceId, member, projects, projectId, workspaces, getAllProjects }; 
 };
 
 
@@ -64,15 +65,9 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const form = await request.clone().formData();
   let imageUrl = form.get("img");
   const name = form.get("name");
-  const workspaceId = params.workspaceId;
-  const inviteCode = generateInviteCode(6);
   
   if (!name) {
     return json({ error: "Workspace name is required." }, { status: 400 });
-  }
-  
-  if (!inviteCode) {
-    return json({ error: "Invite code generation failed." }, { status: 400 });
   }
   
   if (imageUrl && imageUrl.size > 0) {
@@ -97,7 +92,6 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const workspace = {
     name,
     imageUrl,
-    inviteCode,
   };
    
   try {
@@ -112,6 +106,8 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
 
 export default function ProjectLayout() {
+  const { getAllProjects } = useLoaderData();
+
   return (
     <>
       <div className="min-h-screen">
@@ -119,7 +115,7 @@ export default function ProjectLayout() {
         <CreateProjectModal/>
         <div className="flex w-full h-full">
           <div className="flex left-0 top-0 hidden lg:block lg:w-[350px] f-full overflow-y-auto">
-            <Sidebar />
+            <Sidebar projects={getAllProjects} />
           </div>
           <div className="lg w-full">
             <div className="mx-auto max-w-screen-2xl h-full">

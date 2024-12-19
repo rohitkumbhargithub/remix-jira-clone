@@ -29,10 +29,7 @@ const Tasks = () => {
   const { projects, tasks } = useLoaderData();
   const {workspaceId} = useParams();
   const filteredTasks = tasks.filter(task => task.workspaceId === Number(workspaceId));
-  const { projectId } = useParams();
-  const id = Number(projectId);
 
-  // const project = projects.find((proj) => proj.id === id);
   return (
     <div className="h-full flex flex-col">
       <TaskViewSwitcher projects={projects} members={userData} tasks={filteredTasks} hideProjectFilter />

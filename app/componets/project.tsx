@@ -1,18 +1,14 @@
-import { useLoaderData, useLocation, useParams, useSearchParams } from "@remix-run/react";
+import { useLocation, useParams, useSearchParams } from "@remix-run/react";
 import { Link } from "@remix-run/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { RiAddCircleFill } from "react-icons/ri";
 import { ProjectAvatar } from "~/projects/components/project-avatar";
 import ProjectModal from "./project-modal";
 import { cn } from "~/lib/utils";
-import { p } from "node_modules/nuqs/dist/serializer-DjSGvhZt";
 
-
-
-const Project = ({projects}) => {
+const Project = ({projects = []}) => {
   const {workspaceId} = useParams();
   const filteredProjects = projects.filter(project => project.workspaceId === Number(workspaceId));
-  // const project = filteredProjects || [];
   const location = useLocation();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -42,26 +38,24 @@ const Project = ({projects}) => {
         </div>
         {
           filteredProjects ? 
-          (
-            filteredProjects?.map((project) => {
-              const href = `/workspaces/${workspaceId}/projects/${project.id}`;
-              const isActive = location.pathname === href;
-    
-              return (
-                <Link to={href} key={project.id}>
-                  <div
-                    className={cn(
-                      "flex items-center gap-2.5 p-2.5 rounded-md hover:opacity-75 transition cursor-pointer text-neutral-500",
-                      isActive && "bg-white shadow-sm hover:opacity text-primary"
-                    )}
-                  >
-                    <ProjectAvatar image={project.imageUrl} name={project.name} />
-                    <span className="truncate">{project.name}</span>
-                  </div>
-                </Link>
-              );
-            })
-          ) :
+          (filteredProjects?.map((project) => {
+            const href = `/workspaces/${workspaceId}/projects/${project.id}`;
+            const isActive = location.pathname === href;
+      
+            return (
+              <Link to={href} key={project.id}>
+                <div
+                  className={cn(
+                    "flex items-center gap-2.5 p-2.5 rounded-md hover:opacity-75 transition cursor-pointer text-neutral-500",
+                    isActive && "bg-white shadow-sm hover:opacity text-primary"
+                  )}
+                >
+                  <ProjectAvatar image={project.imageUrl} name={project.name} />
+                  <span className="truncate">{project.name}</span>
+                </div>
+              </Link>
+            );
+          })):
           (
             <p>No project assigne</p>
           )
