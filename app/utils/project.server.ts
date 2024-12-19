@@ -72,6 +72,10 @@ export const createProject = async (params: Params, project: ProjectForm, reques
     if (!user) {
       throw new Error("User must be logged in to view workspaces.");
     }
+
+    await prisma.tasks.deleteMany({
+      where: { projectId: Number(projectId) },
+    });
   
     const deleteProject = await prisma.project.delete({
       where: {

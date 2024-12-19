@@ -114,21 +114,29 @@ export const DeleteWorkspace = async (
     throw new Error("User must be logged in to view workspaces.");
   }
 
-  await prisma.member.deleteMany({
+  // Delete all tasks related to the workspace first
+  await prisma.tasks.deleteMany({
     where: { workspaceId: Number(workspaceId) },
   });
 
+  // Delete all projects related to the workspace
   await prisma.project.deleteMany({
     where: { workspaceId: Number(workspaceId) },
   });
 
-  // Delete the Workspace
+  // Delete all members related to the workspace
+  await prisma.member.deleteMany({
+    where: { workspaceId: Number(workspaceId) },
+  });
+
+  // Finally, delete the workspace
   const deleteWorkspace = await prisma.workspace.delete({
     where: { id: Number(workspaceId) },
   });
 
   return deleteWorkspace;
 };
+
 
 export const getAllMemeber = async (request: Request) => {
   const user = await getUserSession(request);
