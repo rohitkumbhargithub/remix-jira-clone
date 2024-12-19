@@ -5,13 +5,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  useLocation,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
 import './tailwind.css';
 import 'react-toastify/dist/ReactToastify.css';
-import { useEffect } from "react";
 import { Toaster } from "sonner";
 import { AlertTriangle } from "lucide-react";
 import { Button } from "./components/ui/button";

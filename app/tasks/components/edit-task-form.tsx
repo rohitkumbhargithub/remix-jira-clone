@@ -89,6 +89,7 @@ export const EditTaskForm = ({
 
     if (selectedDate) {
       setDate(new Date(selectedDate)); 
+    }
   };
 
   const handleAssigneeChange = (id: string) => {
