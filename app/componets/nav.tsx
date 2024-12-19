@@ -18,7 +18,7 @@ const defaultMap = {
     description: "Monitor all of your projects and tasks here",
 };
 
-export const Nav = () => {
+export const Nav = ({projects}) => {
     const location = useLocation();
     const pathname = location.pathname;
     const pathnameParts = pathname.split("/");
@@ -32,7 +32,7 @@ export const Nav = () => {
                 <h1 className="text-lg font-bold">{title}</h1>
                 <p className="text-muted-foreground">{description}</p>
             </div>
-            <MobileSidebar />
+            <MobileSidebar projects={projects} />
             <UserButton />
         </nav>
     );

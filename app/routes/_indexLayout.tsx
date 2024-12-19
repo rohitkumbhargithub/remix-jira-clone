@@ -12,7 +12,7 @@ import { authenticator } from "~/utils/auth.server";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Jira Clone" },
+    { title: "Home" },
     { name: "description", content: "Welcome to Jira!" },
   ];
 };
@@ -74,16 +74,15 @@ export default function IndexLayout() {
     <>
       <div className="min-h-screen">
         <CreateWorkspaceModal />
-        <CreateProjectModal />
+        <CreateProjectModal/>
         <div className="flex w-full h-full">
           <div className="flex left-0 top-0 hidden lg:block lg:w-[350px] f-full overflow-y-auto">
-            <Sidebar
-              projects={getAllProjects}
-            />
+            <Sidebar projects={getAllProjects} />
           </div>
           <div className="lg w-full">
             <div className="mx-auto max-w-screen-2xl h-full">
-              <Nav />
+              <Nav projects={getAllProjects} />
+
               <main className="h-full py-8 px-6 flex flex-col">
                 <Outlet />
               </main>

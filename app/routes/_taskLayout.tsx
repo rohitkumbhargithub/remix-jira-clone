@@ -119,7 +119,7 @@ export default function ProjectLayout() {
           </div>
           <div className="lg w-full">
             <div className="mx-auto max-w-screen-2xl h-full">
-              <Nav />
+              <Nav projects={getAllProjects} />
 
               <main className="h-full py-8 px-6 flex flex-col">
                 <Outlet />

@@ -15,3 +15,5 @@ export default function Modal({ isOpen, onClose }: ModalProps) {
     </ResponsiveModal>
   );
 }
+
+

@@ -1,4 +1,4 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, Link, redirect, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
 import { PencilIcon } from "lucide-react";
 import { Button } from "~/components/ui/button";
@@ -11,6 +11,13 @@ import { getUserSession } from "~/utils/session.server";
 import { createTask, deleteTask, getTask, getTotalAssignee, getTotalCompleteTask, getTotalInCompleteTask, getTotalOverDueTask, getTotalTasks, updateTask } from "~/utils/task.server";
 import { getAllUsers } from "~/utils/user.server";
 import { getAllMemeber } from "~/utils/workspace.server";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Project Details" },
+    { name: "description", content: "Welcome to Jira!" },
+  ];
+};
 
 export const loader = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {

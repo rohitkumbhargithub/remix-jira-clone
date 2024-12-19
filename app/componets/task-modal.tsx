@@ -17,7 +17,6 @@ export default function TaskModal({
 }: TaskModalProps) {
   const { workspaceId, projectId } = useParams();
   const data = members;
-  // console.log(data, "task Modal")
 
   const id = parseInt(workspaceId, 10);
   const currentWorkspaceId = id; // Use the parsed workspaceId to match the current workspace
@@ -37,7 +36,6 @@ export default function TaskModal({
     userIdsInCurrentWorkspace.includes(user.id)
   );
 
-  // Resulting list of users in the current workspace
   const users = usersInCurrentWorkspace;
 
   return (

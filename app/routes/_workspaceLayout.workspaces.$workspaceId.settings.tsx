@@ -1,6 +1,7 @@
 import {
   ActionFunctionArgs,
   LoaderFunction,
+  MetaFunction,
   UploadHandler,
 } from "@remix-run/node";
 import { redirect, useActionData, useParams } from "@remix-run/react";
@@ -18,15 +19,19 @@ import {
   UpdateWorkspace,
   DeleteWorkspace,
   getWorkspacesByUser,
-  getAllWorkspaces,
   ResetCode,
-  getAllMemeber,
 } from "~/utils/workspace.server";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
 import { generateInviteCode } from "~/lib/utils";
-import { DeleteProject } from "~/utils/project.server";
 import { Toaster } from "~/components/ui/sonner";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Workspace Settings" },
+    { name: "description", content: "Welcome to Jira!" },
+  ];
+};
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {

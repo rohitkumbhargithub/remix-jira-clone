@@ -1,4 +1,4 @@
-import { ActionFunction, LoaderFunction } from "@remix-run/node";
+import { ActionFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
 import { Form, json, Link, useActionData } from "@remix-run/react";
 import { useEffect } from "react";
 import { FaGithub } from "react-icons/fa";
@@ -9,6 +9,13 @@ import Navbar from "~/componets/navbar";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { authenticator } from "~/utils/auth.server";
 import { getAllUsers } from "~/utils/user.server";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Jira Clone- Sign-in" },
+    { name: "description", content: "Welcome to Jira!" },
+  ];
+};
 
 export const loader: LoaderFunction = async ({ request }) => {
   const user = await authenticator.isAuthenticated(request, {

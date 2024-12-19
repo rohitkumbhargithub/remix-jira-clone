@@ -7,6 +7,13 @@ import { getTask } from "~/utils/task.server";
 import { getAllUsers } from "~/utils/user.server";
 import { getAllMemeber } from "~/utils/workspace.server";
 
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Task List" },
+    { name: "description", content: "Welcome to Jira!" },
+  ];
+};
+
 export const loader = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
     failureRedirect: "/sign-in",

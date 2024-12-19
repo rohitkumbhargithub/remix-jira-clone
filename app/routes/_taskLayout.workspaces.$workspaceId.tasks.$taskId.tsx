@@ -1,4 +1,4 @@
-import { ActionFunctionArgs } from "@remix-run/node";
+import { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { json, redirect, useLoaderData, useParams } from "@remix-run/react";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { TaskBreadcrumbs } from "~/tasks/components/task-breadcrumbs";
@@ -11,6 +11,13 @@ import { deleteTask, getTask, updateDescription } from "~/utils/task.server";
 import { getAllUsers } from "~/utils/user.server";
 import { getAllMemeber } from "~/utils/workspace.server";
 
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Task Information" },
+    { name: "description", content: "Welcome to Jira!" },
+  ];
+};
 
 export const loader = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {

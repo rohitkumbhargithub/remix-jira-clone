@@ -4,15 +4,6 @@ import { getAllMemeber } from "~/utils/workspace.server";
 
 import IndexLayout from "./_indexLayout";
 
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
-  ];
-};
-
-
 export const loader: LoaderFunction = async({ request }) => {
   const user = await authenticator.isAuthenticated(request, {
     failureRedirect: "/sign-in"

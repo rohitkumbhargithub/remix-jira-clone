@@ -1,5 +1,5 @@
 import { toast, Toaster } from "sonner";
-import { ActionFunction } from "@remix-run/node";
+import { ActionFunction, MetaFunction } from "@remix-run/node";
 import { Form, json, Link, useActionData } from "@remix-run/react";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
@@ -9,6 +9,13 @@ import { authenticator } from "~/utils/auth.server";
 import { useEffect } from "react";
 import { Button } from "~/components/ui/button";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Jira Clone- Sign-up" },
+    { name: "description", content: "Welcome to Jira!" },
+  ];
+};
 
 export const action: ActionFunction = async ({ request }) => {
   const form = await request.clone().formData();

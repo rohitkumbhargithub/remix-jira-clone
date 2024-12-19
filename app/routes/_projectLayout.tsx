@@ -15,17 +15,9 @@ import {
     unstable_parseMultipartFormData as parseMultipartFormData,
   } from "@remix-run/node";
 import { uploadImage } from "~/utils/cloudinary.server";
-import { getProjectsByWorkspace } from "~/utils/project.server";
+import { getProjects, getProjectsByWorkspace } from "~/utils/project.server";
 import { authenticator } from "~/utils/auth.server";
 import { generateInviteCode } from "~/lib/utils";
-
-
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Jira Clone" },
-    { name: "description", content: "Welcome to Jira!" },
-  ];
-};
 
 export const loader = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
@@ -47,8 +39,9 @@ export const loader = async ({ request, params }) => {
 
   const matchedItems = result.filter(item => item.userId === user.id);
   const workspaces = matchedItems.map(item => item.workspace);
+  const getAllProjects = await getProjects(request);
 
-  return { user, workspaces, workspaceId, projects, projectId }; 
+  return { user, workspaces, workspaceId, projects, projectId, getAllProjects }; 
 };
 
 
@@ -104,7 +97,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
 
 export default function ProjectLayout() {
-  const {projects } = useLoaderData() || [];
+  const { getAllProjects } = useLoaderData() || [];
   return (
     <>
       <div className="min-h-screen">
@@ -112,11 +105,11 @@ export default function ProjectLayout() {
         <CreateProjectModal/>
         <div className="flex w-full h-full">
           <div className="flex left-0 top-0 hidden lg:block lg:w-[350px] f-full overflow-y-auto">
-            <Sidebar projects={projects} />
+            <Sidebar projects={getAllProjects} />
           </div>
           <div className="lg w-full">
             <div className="mx-auto max-w-screen-2xl h-full">
-              <Nav />
+              <Nav projects={getAllProjects} />
 
               <main className="h-full py-8 px-6 flex flex-col">
                 <Outlet />

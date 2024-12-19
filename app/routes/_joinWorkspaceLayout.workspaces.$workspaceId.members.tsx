@@ -1,9 +1,18 @@
-import { ActionFunctionArgs, LoaderFunction, redirect } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { LoaderFunction, redirect } from "@remix-run/node";
+import { MetaFunction } from "@remix-run/react";
 import { authenticator } from "~/utils/auth.server";
 import { getAllUsers } from "~/utils/user.server";
 import { deleteMemberInWorkspace, getAllMemeber, updateAsMemberInWorkspace } from "~/utils/workspace.server";
 import { MembersList } from "~/workspaces/components/members-list";
+
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Workspaces Members" },
+    { name: "description", content: "Welcome to Jira!" },
+  ];
+};
+
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {

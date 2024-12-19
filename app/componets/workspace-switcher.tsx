@@ -25,15 +25,15 @@ export const WorkspaceSwitcher = () => {
   
 
   const openModal = () => {
-    searchParams.set("create-workspace", "true");
-    setSearchParams(searchParams);
+    // searchParams.set("create-workspace", "true");
+    // setSearchParams(searchParams);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    searchParams.delete("create-workspace");
-    setSearchParams(searchParams);
+    // searchParams.delete("create-workspace");
+    // setSearchParams(searchParams);
   };
 
   const onSelect = (id: string) => {

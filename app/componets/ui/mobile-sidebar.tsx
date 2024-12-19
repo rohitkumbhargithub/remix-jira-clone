@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "~/components/ui/sheet"
 
 import { useLocation } from "@remix-run/react"
 
-export const MobileSidebar = () => {
+export const MobileSidebar = ({projects}) => {
     const [isOpen, setIsOpen] = useState(false);
     const location = useLocation();
     const pathname = location.pathname;
@@ -24,7 +24,7 @@ export const MobileSidebar = () => {
                 </Button>
             </SheetTrigger>
             <SheetContent side="left" className="p-0">
-                <Sidebar />
+                <Sidebar projects={projects} />
             </SheetContent>
         </Sheet>
     )

@@ -1,6 +1,7 @@
 import {
   ActionFunctionArgs,
   LoaderFunction,
+  MetaFunction,
   UploadHandler,
 } from "@remix-run/node";
 import { redirect, useActionData, useLoaderData } from "@remix-run/react";
@@ -21,6 +22,13 @@ import {
   getProjectsByWorkspace,
   UpdateProject,
 } from "~/utils/project.server";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Project Settings" },
+    { name: "description", content: "Welcome to Jira!" },
+  ];
+};
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
