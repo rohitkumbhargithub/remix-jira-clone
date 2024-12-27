@@ -1,5 +1,3 @@
-"use client";
-
 import { z } from "zod";
 import { useRef, useState } from "react";
 import { cn } from "~/lib/utils";

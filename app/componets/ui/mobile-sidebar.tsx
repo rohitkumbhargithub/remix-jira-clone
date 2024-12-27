@@ -1,5 +1,3 @@
-"use client"
-
 import { useEffect, useState } from "react";
 import { MenuIcon } from "lucide-react";
 import { Sidebar } from "~/componets/sidebar";
