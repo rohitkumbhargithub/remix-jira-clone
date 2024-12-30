@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,66 +7,64 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-
 model User {
-  id        Int        @id @default(autoincrement())
-  email     String     @unique
-  name      String
-  password  String?
+  id         Int         @id @default(autoincrement())
+  email      String      @unique
+  name       String
+  password   String?
+  createdAt  DateTime    @default(now())
+  members    Member[]
+  tasks      Tasks[]     @relation("AssignedTasks")
   workspaces Workspace[] @relation("OwnedWorkspaces")
-  tasks     Tasks[]     @relation("AssignedTasks")  // Corrected here
-  members   Member[]
-  createdAt DateTime   @default(now())    
 }
 
 model Workspace {
-  id          Int       @id @default(autoincrement())
-  name        String
-  imageUrl    String
-  inviteCode  String
-  userId      Int     
-  user        User      @relation(fields: [userId], references: [id], name: "OwnedWorkspaces") 
-  members     Member[]
-  projects    Project[] @relation("WorkspaceProjects")
-  tasks       Tasks[]   @relation("WorkspaceTasks")  // Add the relation name here
-  createdAt   DateTime  @default(now()) 
+  id         Int       @id @default(autoincrement())
+  name       String
+  imageUrl   String
+  createdAt  DateTime  @default(now())
+  inviteCode String
+  userId     Int
+  members    Member[]
+  projects   Project[] @relation("WorkspaceProjects")
+  tasks      Tasks[]   @relation("WorkspaceTasks")
+  user       User      @relation("OwnedWorkspaces", fields: [userId], references: [id])
 }
 
 model Project {
   id          Int       @id @default(autoincrement())
   name        String
   imageUrl    String
-  workspaceId Int       
-  workspace   Workspace @relation("WorkspaceProjects", fields: [workspaceId], references: [id]) 
-  tasks       Tasks[]   // No change needed here
-  createdAt   DateTime  @default(now()) 
+  workspaceId Int
+  createdAt   DateTime  @default(now())
+  workspace   Workspace @relation("WorkspaceProjects", fields: [workspaceId], references: [id])
+  tasks       Tasks[]
 }
 
 model Member {
   id          Int       @id @default(autoincrement())
-  role        String    
-  userId      Int       
-  workspaceId Int       
-  user        User      @relation(fields: [userId], references: [id])      
+  role        String
+  userId      Int
+  workspaceId Int
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id])
   workspace   Workspace @relation(fields: [workspaceId], references: [id])
-  
-  @@unique([userId, workspaceId]) 
-  createdAt DateTime   @default(now())
+
+  @@unique([userId, workspaceId])
 }
 
-model Tasks {  
+model Tasks {
   id          Int       @id @default(autoincrement())
   workspaceId Int
   name        String
   projectId   Int
   assigneeId  Int
-  description String? 
+  description String?
   dueDate     DateTime
   status      String
   position    Int
   createdAt   DateTime  @default(now())
-  project     Project   @relation(fields: [projectId], references: [id])
   assignee    User      @relation("AssignedTasks", fields: [assigneeId], references: [id])
-  workspace   Workspace @relation("WorkspaceTasks", fields: [workspaceId], references: [id]) // Add the relation here
+  project     Project   @relation(fields: [projectId], references: [id])
+  workspace   Workspace @relation("WorkspaceTasks", fields: [workspaceId], references: [id])
 }
