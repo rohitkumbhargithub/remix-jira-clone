@@ -2,11 +2,12 @@ import { toast, Toaster } from "sonner";
 import { ActionFunction, MetaFunction } from "@remix-run/node";
 import { Form, json, Link, useActionData } from "@remix-run/react";
 import { FaGithub } from "react-icons/fa";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import Navbar from "~/componets/navbar";
 import { createUser } from "~/utils/user.server";
 import { authenticator } from "~/utils/auth.server";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 
@@ -53,6 +54,7 @@ export const action: ActionFunction = async ({ request }) => {
 
 const SignUp = () => {
   const actionData = useActionData();
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (actionData?.error) {
@@ -110,15 +112,28 @@ const SignUp = () => {
             </div>
 
             <div>
-              <div className="mt-2">
+              <div className="mt-2 relative">
                 <input
                   id="password"
                   name="password"
-                  type="password"
-                  placeholder="Enter Password"
+                  type={showPassword ? "text" : "password"}
                   required
+                  autoComplete="current-password"
+                  placeholder="Enter Password"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-2"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-sm text-gray-500 hover:text-gray-700 focus:outline-none"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <FaEye className="text-lg" />
+                  ) : (
+                    <FaEyeSlash className="text-lg" />
+                  )}
+                </button>
               </div>
             </div>
 
