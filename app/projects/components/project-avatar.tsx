@@ -19,7 +19,7 @@ export const ProjectAvatar = ({
     if(image){
         return (
             <div className={cn(
-                "size-5 relative rounded-md overflow-hidden",
+                "size-8 relative rounded-md mt-1 overflow-hidden",
                 classname
             )}>
                 <img src={image} alt={name} className="object-cover" />
