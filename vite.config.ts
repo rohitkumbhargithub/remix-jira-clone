@@ -13,4 +13,10 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  build: {
+    // Exclude 'nodemailer' from bundling to handle the require issue
+    rollupOptions: {
+      external: ['nodemailer'],
+    },
+  },
 });
