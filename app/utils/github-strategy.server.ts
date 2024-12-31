@@ -9,7 +9,8 @@ const githubStrategy = new GitHubStrategy(
   {
     clientId: process.env.GITHUB_CLIENT_ID!, 
     clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    redirectURI: `${process.env.BASE_URL}/auth/github/callback`, 
+    redirectURI: process.env.NODE_ENV === 'production' ?
+    `${process.env.BASE_URL}/auth/github/callback`: `${process.env.DEPLOY_URL}/auth/github/callback`
   },
   async ({ profile }) => {
    
