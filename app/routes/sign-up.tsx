@@ -23,6 +23,7 @@ export const action: ActionFunction = async ({ request }) => {
   const action = form.get("_action");
   const email = form.get("email");
   const password = form.get("password");
+  const cpassword = form.get("cpassword");
   const name = form.get("name");
   if (
     typeof action !== "string" ||
@@ -36,6 +37,13 @@ export const action: ActionFunction = async ({ request }) => {
   if (password.length < 8) {
     return json(
       { error: "Password must be at least 8 characters" },
+      { status: 400 }
+    );
+  }
+
+  if (password !== cpassword) {
+    return json(
+      { error: "Password not matched!" },
       { status: 400 }
     );
   }
@@ -55,6 +63,8 @@ export const action: ActionFunction = async ({ request }) => {
 const SignUp = () => {
   const actionData = useActionData();
   const [showPassword, setShowPassword] = useState(false);
+  const [cshowPassword, csetShowPassword] = useState(false);
+
 
   useEffect(() => {
     if (actionData?.error) {
@@ -92,14 +102,6 @@ const SignUp = () => {
               </div>
             </div>
 
-            {/* <div className="flex items-center justify-between">
-        
-                <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                    Forgot password?
-                  </a>
-                </div>
-              </div> */}
             <div className="">
               <input
                 id="email"
@@ -129,6 +131,32 @@ const SignUp = () => {
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
+                    <FaEye className="text-lg" />
+                  ) : (
+                    <FaEyeSlash className="text-lg" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div className="mt-2 relative">
+                <input
+                  id="cpassword"
+                  name="cpassword"
+                  type={cshowPassword ? "text" : "password"}
+                  required
+                  autoComplete="current-password"
+                  placeholder="Confirm Password"
+                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-2"
+                />
+                <button
+                  type="button"
+                  onClick={() => csetShowPassword(!cshowPassword)}
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-sm text-gray-500 hover:text-gray-700 focus:outline-none"
+                  aria-label={cshowPassword ? "Hide password" : "Show password"}
+                >
+                  {cshowPassword ? (
                     <FaEye className="text-lg" />
                   ) : (
                     <FaEyeSlash className="text-lg" />
@@ -171,10 +199,10 @@ const SignUp = () => {
           </a>
 
           <p className="mt-10 text-center text-sm text-gray-500 mb-3">
-            Already have Account?
+            Already have Account? 
             <Link
               to={"/sign-in"}
-              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500 m-2"
+              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500 ml-2"
             >
               Sign In
             </Link>

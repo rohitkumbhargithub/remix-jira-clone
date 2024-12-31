@@ -1,4 +1,5 @@
 import { ActionFunction, LoaderFunction, MetaFunction } from "@remix-run/node";
+import bcrypt from 'bcryptjs';
 import { Form, json, Link, useActionData } from "@remix-run/react";
 import { useEffect, useState } from "react";
 import { FaGithub } from "react-icons/fa";
@@ -32,19 +33,26 @@ export const action: ActionFunction = async ({ request }) => {
   const email = form.get("email");
   const password = form.get("password");
 
-  if (password.length < 8) {
-    return json({ error: "Password not match" }, { status: 400 });
+  if (password?.length < 8) {
+    return json({ error: "Password must be 8 characters" }, { status: 400 });
   }
-
+  
   const users = await getAllUsers();
-  const checkEmailExists = (inputEmail) => {
-    return users.some((user) => user.email === inputEmail);
-  };
-
-  const emailExist = checkEmailExists(email);
-
-  if (!emailExist) {
-    return json({ error: "User not Register!" }, { status: 400 });
+  
+  // Find the user by email directly instead of checking existence first
+  const user = users.find((u) => u.email === email);
+  
+  if (!user) {
+    return json({ error: "Invalid Username or Password!" }, { status: 400 });
+  }
+  
+  // Check if password exists and compare only if present
+  if (user.password || user.password == "") {
+    const isMatch = await bcrypt.compare(password, user.password);
+  
+    if (!isMatch) {
+      return json({ error: "Invalid Username or Password!" }, { status: 400 });
+    }
   }
 
   return authenticator.authenticate("form", request, {
@@ -92,13 +100,7 @@ const SignIn = () => {
             </div>
 
             <div>
-              <div className="flex items-center justify-between">
-                {/* <div className="text-sm">
-                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
-                    Forgot password?
-                  </a>
-                </div> */}
-              </div>
+              
               <div className="mt-2 relative">
                 <input
                   id="password"
@@ -122,6 +124,13 @@ const SignIn = () => {
                   )}
                 </button>
               </div>
+              {/* <div className="flex items-center justify-end m-2">
+                <div className="text-sm">
+                  <a href="#" className="font-semibold text-indigo-600 hover:text-indigo-500">
+                    Forgot password?
+                  </a>
+                </div>
+              </div> */}
             </div>
 
             <div>
