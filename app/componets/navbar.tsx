@@ -10,15 +10,15 @@ const Navbar = () => {
     return (
         <nav className="px-2 py-1 bg-black">
         <ul className="flex justify-between">
-          <li className="mr-6">
-            <Link className="text-blue-500 hover:text-blue-800" to="#">
+          <li className="ml-6">
+            <Link className="text-blue-500 hover:text-blue-800" to="/">
               <img src={Logo} width={40}/>
             </Link>
           </li>
           <div className="flex justify-center">
               <li className="mr-6">
                 <Button className="py-2 rounded inline-flex items-center"
-                 variant="outline"
+                
                 >
                   
                   <Link to={isSignIn ? "/sign-up" : "/sign-in"}>{pathname === "/sign-in" ? "Sign Up" : "Login"}</Link>
