@@ -1,53 +1,46 @@
-import { json, Link } from '@remix-run/react';
+import { json, Link, redirect } from '@remix-run/react';
 import { Form, useActionData } from '@remix-run/react';
+import { useEffect } from 'react';
 import { FaGithub } from 'react-icons/fa';
 import { FcGoogle } from 'react-icons/fc';
-import { Resend } from 'resend';
+import { toast } from 'sonner';
 import { Button } from '~/components/ui/button';
 import Navbar from '~/componets/navbar';
 import { DottedSperator } from '~/componets/ui/dotted-speartar';
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Mail sending function
-const sendEmail = async (to: string, subject: string, html: string) => {
-  try {
-    const response = await resend.emails.send({
-      from: 'onboarding@resend.dev', // You can change this to a verified sender email
-      to,
-      subject,
-      html,
-    });
-    return response;
-  } catch (error) {
-    console.error('Error sending email:', error);
-    throw new Error('Failed to send email');
-  }
-};
+import { sendMail } from '~/utils/mailer';
+import { getAllUserEmail } from '~/utils/user.server';
 
 // Action function to handle form submission and send the email
 export let action = async ({ request }: { request: Request }) => {
   const formData = new URLSearchParams(await request.text());
   const email = formData.get('email');
 
-  if (!email) {
-    return json({ error: 'Email is required' }, { status: 400 });
+  const data = await getAllUserEmail(email);
+  const emails = data.map(user => user.email);
+
+  if (!emails.includes(email)) {
+    return json({ error: "Email not valid!" }, { status: 400 });
   }
 
-  const subject = 'Hello World';
-  const html = `<p>Congrats on sending your <strong>first email</strong> to ${email}!</p>`;
-
-  try {
-    await sendEmail(email, subject, html);
-    return json({ success: true });
-  } catch (error) {
-    return json({ error: error.message }, { status: 500 });
+  if(email){
+    await sendMail(email);
+    return json({ success: "Reset Link send to your register email!" }, { status: 200 });
   }
+
+  return redirect(`/forgot`);
 };
 
 // Component to render the form and show success or error messages
-export default function SendEmail() {
+export default function Forgot() {
   const actionData = useActionData();
+
+  useEffect(() => {
+    if (actionData?.error) {
+      toast.error(actionData.error);
+    } else if (actionData?.success) {
+      toast.success(actionData.success); // Use toast.success for success messages
+    }
+  }, [actionData]);
   
   return (
     <>
@@ -84,7 +77,7 @@ export default function SendEmail() {
                 name="_action"
                 className="flex w-full justify-center rounded-md bg-black px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-black-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                Send Reset Link
+                Send the link
               </button>
             </div>
           </Form>

@@ -1,56 +1,67 @@
-import { json, Link } from "@remix-run/react";
+import { json, Link, redirect } from "@remix-run/react";
 import { Form, useActionData } from "@remix-run/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import bcrypt from 'bcryptjs';
 import { FaEye, FaEyeSlash, FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { Resend } from "resend";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import Navbar from "~/componets/navbar";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// Mail sending function
-const sendEmail = async (to: string, subject: string, html: string) => {
-  try {
-    const response = await resend.emails.send({
-      from: "onboarding@resend.dev", // You can change this to a verified sender email
-      to,
-      subject,
-      html,
-    });
-    return response;
-  } catch (error) {
-    console.error("Error sending email:", error);
-    throw new Error("Failed to send email");
-  }
-};
+import { updateUserEmail } from "~/utils/user.server";
 
 // Action function to handle form submission and send the email
 export let action = async ({ request }: { request: Request }) => {
-  const formData = new URLSearchParams(await request.text());
-  const email = formData.get("email");
+  // Extract URL search parameters from the request URL (server-side)
+  const urlParams = new URLSearchParams(new URL(request.url).search);
 
-  if (!email) {
-    return json({ error: "Email is required" }, { status: 400 });
+  // Extract form data from the request body
+  const formData = new URLSearchParams(await request.text());
+
+  const password = formData.get("password");
+  const cpassword = formData.get("cpassword");
+  const email = urlParams.get("email");
+
+  // Perform validation on password
+  if (password && password.length < 8) {
+    return json(
+      { error: "Password must be at least 8 characters" },
+      { status: 400 }
+    );
   }
 
-  const subject = "Hello World";
-  const html = `<p>Congrats on sending your <strong>first email</strong> to ${email}!</p>`;
+  if (password && password !== cpassword) {
+    return json({ error: "Password not matched!" }, { status: 400 });
+  }
 
-  try {
-    await sendEmail(email, subject, html);
-    return json({ success: true });
-  } catch (error) {
-    return json({ error: error.message }, { status: 500 });
+  const data = {
+    email,
+    password,
+  };
+
+  // Check if email exists
+  if (email) {
+    // Update user email with the new password
+    await updateUserEmail(data);
+    return redirect("/sign-in");
+  } else {
+    return json({ error: "Can't Update Password!" }, { status: 400 });
   }
 };
 
 // Component to render the form and show success or error messages
-export default function SendEmail() {
+export default function ResetEmail() {
   const actionData = useActionData();
   const [showPassword, setShowPassword] = useState(false);
   const [cshowPassword, csetShowPassword] = useState(false);
+
+  useEffect(() => {
+    if (actionData?.error) {
+      toast.error(actionData.error);
+    } else if (actionData?.success) {
+      toast.success(actionData.success); // Use toast.success for success messages
+    }
+  }, [actionData]);
 
   return (
     <>
@@ -73,7 +84,7 @@ export default function SendEmail() {
                   type={showPassword ? "text" : "password"}
                   required
                   autoComplete="current-password"
-                  placeholder="Enter Password"
+                  placeholder="Enter New Password"
                   className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-2"
                 />
                 <button
@@ -97,7 +108,7 @@ export default function SendEmail() {
                     type={cshowPassword ? "text" : "password"}
                     required
                     autoComplete="current-password"
-                    placeholder="Confirm Password"
+                    placeholder="Enter Confirm Password"
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 p-2"
                   />
                   <button

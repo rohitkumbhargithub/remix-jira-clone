@@ -30,6 +30,47 @@ export const createUser = async( user: RegisterFrom ) => {
     return  { id: newUser.id, email: user.email, name: user.name};
 }
 
+type Email = {
+    email: string,
+}
+
+export const getAllUserEmail = async( user: Email) => {
+    try {
+        const email = await prisma.user.findMany({
+            where: { email: user?.email },
+          });
+          
+          return email;
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        throw error; 
+    }
+}
+
+type UpdatePassFrom = {
+    email: string;
+    password: string;
+};
+
+export const updateUserEmail = async (user: UpdatePassFrom) => {
+    try {
+      // Hash the password before saving it
+      const hashedPassword = await bcrypt.hash(user.password, 10);
+  
+      const updatedUser = await prisma.user.update({
+        where: { email: user.email },
+        data: {
+          password: hashedPassword, // Save the hashed password
+        },
+      });
+  
+      return updatedUser;
+    } catch (error) {
+      console.error("Error updating user password:", error); // Updated the error message
+      throw error;
+    }
+  };
+
 
 export const getAllUsers = async () => {
     try {
