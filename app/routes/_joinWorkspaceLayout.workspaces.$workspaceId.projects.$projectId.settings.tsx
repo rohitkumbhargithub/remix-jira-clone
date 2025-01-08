@@ -20,6 +20,7 @@ import { EditProjectForm } from "~/projects/components/edit-project-form";
 import {
   DeleteProject,
   getProjectsByWorkspace,
+  removeImage,
   UpdateProject,
 } from "~/utils/project.server";
 
@@ -58,6 +59,12 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
     }
   }
 
+  if(form.get("_method") === "DELETE"){
+        const removeImageId = form.get("remove-image");
+        const workspaceId = form.get("workspaceId");
+        await removeImage(request, Number(workspaceId) ,Number(removeImageId));
+  }
+
   let imageUrl = form.get("img");
   const name = form.get("projectName");
 
@@ -80,9 +87,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
     const formData = await parseMultipartFormData(request, uploadHandler);
     imageUrl = formData.get("img");
-  } else {
-    imageUrl = "";
-  }
+  } 
 
   const project = { name, imageUrl };
 

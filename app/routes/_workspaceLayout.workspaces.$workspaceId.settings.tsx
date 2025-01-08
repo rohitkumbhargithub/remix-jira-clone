@@ -4,7 +4,7 @@ import {
   MetaFunction,
   UploadHandler,
 } from "@remix-run/node";
-import { redirect, useActionData, useParams } from "@remix-run/react";
+import { redirect, useActionData, useLoaderData, useParams } from "@remix-run/react";
 import { authenticator } from "~/utils/auth.server";
 import { UpdateWorkspaceForm } from "~/workspaces/components/update-workspace";
 
@@ -20,6 +20,8 @@ import {
   DeleteWorkspace,
   getWorkspacesByUser,
   ResetCode,
+  getAllWorkspacesId,
+  removeImage,
 } from "~/utils/workspace.server";
 import { useEffect } from "react";
 import { toast } from "react-toastify";
@@ -38,7 +40,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     failureRedirect: "/sign-in",
   });
   const workspaceId = params.workspaceId;
-  return workspaceId;
+  const url = new URL(request.url);
+  const origin = url.origin; 
+  return { origin, workspaceId };
 };
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
@@ -71,6 +75,12 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       }
     }
   
+
+    if(form.get("_method") === "DELETE"){
+      const removeImageId = form.get("remove-image");
+      await removeImage(request, Number(removeImageId));
+    }
+
   
     let imageUrl = form.get("img");
     const name = form.get("workspaceName");
@@ -99,11 +109,8 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   
       const formData = await parseMultipartFormData(request, uploadHandler);
       imageUrl = formData.get("img");
-    }else{
-      imageUrl = "";
     }
     
-  
     const workspaceData = { name, imageUrl };
   
     try {
@@ -117,6 +124,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
 const WorkspaceSetting = ({ workspace }) => {
   const workspaceIdParams = useParams();
+  const { origin } = useLoaderData();
   const jsonString = JSON.stringify(workspaceIdParams);
   const parsedData = JSON.parse(jsonString);
   const workspaceId = parseInt(parsedData.workspaceId, 10);

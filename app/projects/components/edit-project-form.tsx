@@ -1,4 +1,4 @@
-import { Form, Link, useFetcher, useNavigation } from "@remix-run/react";
+import { Form, Link, useFetcher, useNavigate, useNavigation } from "@remix-run/react";
 import { ArrowLeftIcon, CopyIcon, ImageIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -7,14 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { useConfirm } from "~/features/hooks/useConfirm";
+import { useProjectId } from "~/hooks/user-projectId";
+import { useWorkspaceId } from "~/hooks/user-workspaceId";
 
 import { cn } from "~/lib/utils";
-
-// export async function loader({ request }) {
-//   const url = new URL(request.url);
-//   const origin = url.origin;
-//   return { origin };
-// }
 
 type EditProjectFormProps = {
   actionUrl: string;
@@ -33,6 +29,9 @@ export const EditProjectForm = ({
   actionUrl,
 }: EditProjectProps) => {
   const inputRef = useRef(null);
+  const projectId = useProjectId();
+  const workspaceId = useWorkspaceId();
+  const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false); // Track form submission state
   const navigation = useNavigation();
@@ -58,11 +57,22 @@ export const EditProjectForm = ({
     }
   };
 
-  const handleButtonRemove = () => {
+  const handleButtonRemove = async(actionValue) => {
     setUploaded(false);
     setImagePreview(null);
-    // setImage("");
+    setImage("");
     if (inputRef.current) inputRef.current.value = null;
+
+    const formData = new FormData();
+    formData.append("_method", "DELETE");
+    formData.append(actionValue, projectId);
+    formData.append("workspaceId", workspaceId);
+
+    await fetch(`/workspaces/${workspaceId}/projects/${projectId}/settings`, {
+      method: "POST",
+      body: formData,
+    });
+    navigate(`/workspaces/${workspaceId}/projects/${projectId}/settings`);
   };
 
   const handleButtonClick = () => {
@@ -206,7 +216,9 @@ export const EditProjectForm = ({
                         type="button"
                         className="mt-2 w-fit px-4 py-2 rounded-md"
                         variant="destructive"
-                        onClick={handleButtonRemove}
+                        name="remove"
+                        value="remove-image"
+                        onClick={() => handleButtonRemove("remove-image")}
                         disabled={isPending}
                       >
                         Remove Image

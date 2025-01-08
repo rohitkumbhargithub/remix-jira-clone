@@ -54,7 +54,6 @@ export const CreateWorkspaceForm = ({
     if (uploaded) {
       setUploaded(false); // Remove image and reset input
       setImagePreview(null);
-      console.log(uploaded);
       if (inputRef.current) inputRef.current.value = null;
     } else {
       inputRef.current?.click(); // Open file dialog

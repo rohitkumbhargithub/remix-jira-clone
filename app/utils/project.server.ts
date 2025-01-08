@@ -89,7 +89,20 @@ export const createProject = async (params: Params, project: ProjectForm, reques
 
   export const UpdateProject = async (project: ProjectForm, projectId: ProjectId, request: Request) => {
     const user = await getUserSession(request);
+    if (!user) {
+      throw new Error("User must be logged in to view workspaces.");
+    }
 
+    const getProjectImage = await prisma.project.findMany({
+      where: {
+        id: Number(projectId),
+      },
+    })
+  
+    const currentImageUrl = getProjectImage[0].imageUrl;
+    const imageUrl = typeof project.imageUrl === 'string' && project.imageUrl !== currentImageUrl
+      ? project.imageUrl
+      : currentImageUrl;
     
 
     const updateProject = await prisma.project.update({
@@ -98,9 +111,42 @@ export const createProject = async (params: Params, project: ProjectForm, reques
         },
         data: {
           name: project.name,      
-          imageUrl: project.imageUrl,  
+          imageUrl: imageUrl,  
         },
       });
 
       return updateProject;
 }
+
+
+export const removeImage = async (request: Request, workspaceId: number, projectId: number) => {
+  // Ensure user is logged in
+  const user = await getUserSession(request);
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
+
+  // Fetch the workspace
+  const project = await prisma.project.findUnique({
+    where: {
+      id: projectId,
+      workspaceId: workspaceId 
+    },
+  });
+
+  if (!project) {
+    throw new Error("project not found.");
+  }
+
+  const projects = await prisma.project.update({
+    where: {
+      id: projectId,
+      workspaceId: workspaceId,
+    },
+    data: {
+      imageUrl: "",
+    },
+  });
+
+  return projects;
+};

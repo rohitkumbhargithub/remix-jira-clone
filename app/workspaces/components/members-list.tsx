@@ -1,7 +1,6 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu"
 import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react"
 import { ArrowLeftIcon, MoreVerticalIcon } from "lucide-react"
-import { Navigate } from "react-big-calendar"
 import { Fragment } from "react/jsx-runtime"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card"
@@ -17,7 +16,6 @@ export const MembersList = () => {
     const navigate = useNavigate();
 
     const workspaceId = useWorkspaceId();
-    const id = parseInt(workspaceId, 10);
     const currentWorkspaceId = data.workspaceId;
 
     // Filter members that belong to the current workspace

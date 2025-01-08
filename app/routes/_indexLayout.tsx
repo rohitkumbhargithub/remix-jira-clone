@@ -54,9 +54,6 @@ export const loader = async ({ request, params }) => {
 export default function IndexLayout() {
   const { workspaceId, projects, workspacesByMembers, workspaces, getAllProjects } =
     useLoaderData() || {};
-  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState(
-    Number(workspaceId)
-  );
 
   const navigate = useNavigate();
 

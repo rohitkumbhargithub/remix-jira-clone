@@ -7,9 +7,9 @@ import { useSearchParams } from '@remix-run/react';
 export const CreateProjectModal = () => {
   const { isModalOpen, closeModal } = useCreateWorkspaceModal();  
   const [searchParams, setSearchParams] = useSearchParams();
-  const modal = searchParams.get("create-workspace") === "true"; 
+  const modal = searchParams.get("create-project") === "true"; 
   const handleCloseModal = () => {
-    searchParams.delete("create-workspace");
+    searchParams.delete("create-project");
     setSearchParams(searchParams); 
     closeModal(); 
   };

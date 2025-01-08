@@ -62,6 +62,53 @@ export const getAllWorkspaces = async (request: Request) => {
   return workspaces;
 };
 
+export const getAllWorkspacesId = async (
+  request: Request,
+  workspaceId: WorkspaceId
+) => {
+  const user = await getUserSession(request);
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
+
+  const workspaces = await prisma.workspace.findMany({
+    where: {
+      id: workspaceId,
+    },
+  });
+  return workspaces;
+};
+
+export const removeImage = async (request: Request, workspaceId: number) => {
+  // Ensure user is logged in
+  const user = await getUserSession(request);
+  if (!user) {
+    throw new Error("User must be logged in to view workspaces.");
+  }
+
+  // Fetch the workspace
+  const workspace = await prisma.workspace.findUnique({
+    where: {
+      id: workspaceId,
+    },
+  });
+
+  if (!workspace) {
+    throw new Error("Workspace not found.");
+  }
+
+  const workspaces = await prisma.workspace.update({
+    where: {
+      id: workspaceId,
+    },
+    data: {
+      imageUrl: "",
+    },
+  });
+
+  return workspaces;
+};
+
 export const getWorkspacesByUser = async (request: Request) => {
   const user = await getUserSession(request);
   if (!user) {
@@ -92,13 +139,24 @@ export const UpdateWorkspace = async (
     throw new Error("User must be logged in to view workspaces.");
   }
 
+  const getWorkspaceImage = await prisma.workspace.findMany({
+    where: {
+      id: Number(workspaceId),
+    },
+  })
+
+  const currentImageUrl = getWorkspaceImage[0].imageUrl;
+  const imageUrl = typeof workspace.imageUrl === 'string' && workspace.imageUrl !== currentImageUrl
+    ? workspace.imageUrl
+    : currentImageUrl;
+
   const updatedWorkspace = await prisma.workspace.update({
     where: {
       id: Number(workspaceId),
     },
     data: {
       name: workspace.name,
-      imageUrl: workspace.imageUrl,
+      imageUrl: imageUrl,
     },
   });
 
@@ -136,7 +194,6 @@ export const DeleteWorkspace = async (
 
   return deleteWorkspace;
 };
-
 
 export const getAllMemeber = async (request: Request) => {
   const user = await getUserSession(request);
@@ -232,6 +289,7 @@ export const updateAsMemberInWorkspace = async (
     throw new Error("User must be logged in to view workspaces.");
   }
 
+  let updateMember;
   const memberData = await prisma.member.findMany({
     where: {
       userId: Number(memerId),

@@ -7,23 +7,35 @@ import {
     UploadHandler,
     ActionFunctionArgs,
   } from "@remix-run/node";
-import { Link, useLoaderData } from "@remix-run/react";
+import { Link, useLoaderData, useNavigate } from "@remix-run/react";
+import { useEffect } from "react";
 import UserButton from "~/componets/user-button";
 import { generateInviteCode } from "~/lib/utils";
 import { authenticator } from "~/utils/auth.server";
 import { uploadImage } from "~/utils/cloudinary.server";
 import { getUserSession } from "~/utils/session.server";
-import { createWorkspaces, getWorkspacesByUser } from "~/utils/workspace.server";
+import { createWorkspaces, getAllMemeber, getMemeberByWorkspace, getWorkspacesByUser } from "~/utils/workspace.server";
 import { CreateWorkspaceForm } from "~/workspaces/components/create-workspace";
 
 
-export const loader = async ({ request }) => {
+export const loader = async ({ request, params }) => {
     await authenticator.isAuthenticated(request, {
         failureRedirect: "/sign-in",
-    })
-    const user = await getUserSession(request); 
-    const workspace = await getWorkspacesByUser(request);
-    return { user, workspace }; 
+    }) 
+    const user = await getUserSession(request);
+    
+      const workspaceId = params.workspaceId;
+      const members = await getAllMemeber(request);
+      const membersByWorkspace = await getMemeberByWorkspace(request, user.id);
+      const workspacesByMembers = membersByWorkspace.map((item) => item.workspace);
+      const result = members.map(({ workspace, userId }) => ({
+        workspace,
+        userId,
+      }));
+    
+      const matchedItems = result.filter((item) => item.userId === user.id);
+      const workspaces = matchedItems.map((item) => item.workspace);
+    return { user, workspaces, workspaceId }; 
 };
 
 
@@ -76,7 +88,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   };
 
 const WorkspaceCreate = () => {
-    const { user, workspace } = useLoaderData() || {};
+    const { user, workspaces, workspaceId} = useLoaderData() || {};
+    console.log(workspaces);
+
+    const navigate = useNavigate();
+    
+      useEffect(() => {
+        if (workspaces.length === 0) {
+          navigate(`/workspaces/create`);
+        } else if(workspaceId) {
+          navigate(`/workspaces/${workspaceId}`);
+        } else {
+          navigate(`/workspaces/${workspaces[0].id}`);
+        }
+      }, [workspaceId, navigate]);
     return (
         <main className="bg-neutral-100 min-h-screen">
             <div className="mx-auto max-w-screen-2xl p-4">

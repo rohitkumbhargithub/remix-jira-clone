@@ -1,4 +1,4 @@
-import { Form, Link, useFetcher, useNavigation } from "@remix-run/react";
+import { Form, Link, useFetcher, useLoaderData, useNavigate, useNavigation } from "@remix-run/react";
 import { ArrowLeftIcon, CopyIcon, ImageIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { useConfirm } from "~/features/hooks/useConfirm";
+import { useWorkspaceId } from "~/hooks/user-workspaceId";
 
 import { cn } from "~/lib/utils";
 
@@ -33,6 +34,8 @@ export const UpdateWorkspaceForm = ({
   actionUrl,
 }: UpdateWorkspaceProps) => {
   const inputRef = useRef(null);
+  const workspaceId = useWorkspaceId();
+  const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState(null);
   const [isSubmitted, setIsSubmitted] = useState(false); // Track form submission state
   const navigation = useNavigation();
@@ -56,11 +59,20 @@ export const UpdateWorkspaceForm = ({
     }
   };
 
-  const handleButtonRemove = () => {
+  const handleButtonRemove = async (actionValue) => {
     setUploaded(false);
     setImagePreview(null);
     setImage("");
     if (inputRef.current) inputRef.current.value = null;
+    const formData = new FormData();
+    formData.append("_method", "DELETE");
+    formData.append(actionValue, workspaceId);
+
+    await fetch(`/workspaces/${workspaceId}/settings`, {
+      method: "POST",
+      body: formData,
+    });
+    navigate(`/workspaces/${workspaceId}/settings`);
   };
 
   const handleButtonClick = () => {
@@ -132,7 +144,7 @@ export const UpdateWorkspaceForm = ({
     }
   }, [fetcher.data]);
 
-  const fullInviteLink = `https://remix-jira-clone.onrender.com/workspaces/${initialValues}/join/${workspaceData.inviteCode}`;
+  const fullInviteLink = `${origin}/workspaces/${initialValues}/join/${workspaceData.inviteCode}`;
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -216,16 +228,19 @@ export const UpdateWorkspaceForm = ({
                       ref={inputRef}
                       onChange={handleImageChange}
                     />
+
                     {image ? (
                       <Button
-                        type="button"
-                        className="mt-2 w-fit px-4 py-2 rounded-md"
-                        variant="destructive"
-                        onClick={handleButtonRemove}
-                        disabled={isPending}
-                      >
-                        Remove Image
-                      </Button>
+                      type="button"
+                      className="mt-2 w-fit px-4 py-2 rounded-md"
+                      variant="destructive"
+                      name="remove"
+                      value="remove-image"
+                      onClick={() => handleButtonRemove("remove-image")}
+                      disabled={isPending}
+                    >
+                      Remove Image
+                    </Button>
                     ) : (
                       <Button
                         type="button"
@@ -248,12 +263,11 @@ export const UpdateWorkspaceForm = ({
                   size="lg"
                   onClick={onCancel}
                   className={cn(onCancel ? "visible" : "invisible")}
-                  //  disabled={isPending}
                 >
                   Cancel
                 </Button>
 
-                <Button type="submit" size="lg" onClick={handleSubmit}>
+                <Button type="submit" size="lg" name="action" value="save">
                   Save the Changes
                 </Button>
               </div>

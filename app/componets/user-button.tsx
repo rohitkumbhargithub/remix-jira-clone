@@ -6,7 +6,6 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { useFetcher, useLoaderData } from "@remix-run/react";
-import { BiLogOut } from "react-icons/bi";
 import { DottedSperator } from "./ui/dotted-speartar";
 import { LogOut } from "lucide-react";
 
