@@ -3,6 +3,7 @@ import { prisma } from "./prisma.server";
 import { getUserSession } from "./session.server";
 import { json, Params } from "@remix-run/react";
 import { redirect } from "react-router";
+import { toast } from "sonner";
 
 type WorkspaceForm = {
   id: string;
@@ -302,12 +303,6 @@ export const deleteMemberInWorkspace = async (
         }
       });
      
-    }else{
-      deleteMember = await prisma.member.delete({
-        where: {
-          id: memberData[0].id,
-        },
-      });
     }
   }
   return deleteMember;
@@ -428,8 +423,7 @@ export const getJoinedWorkspace = async (params: Params, request: Request) => {
   });
 
   if (existingMember) {
-    console.log("User is already a member");
-    return redirect(`/workspaces/${workspaceId}`);
+    throw new Error("User already Joined!");
   }
 
   // Using a transaction to ensure that the user is added to the workspace correctly

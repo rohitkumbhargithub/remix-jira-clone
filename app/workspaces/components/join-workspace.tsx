@@ -1,4 +1,5 @@
-import { Form, Link, useLoaderData } from "@remix-run/react"
+import { Form, Link, useLoaderData, useParams } from "@remix-run/react"
+import { toast } from "sonner"
 import { Button } from "~/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card"
 import { DottedSperator } from "~/componets/ui/dotted-speartar"
@@ -6,6 +7,11 @@ import { DottedSperator } from "~/componets/ui/dotted-speartar"
 export const JoinWorkspaceForm = ({initialValues, workspace}) => {
     const id = parseInt(initialValues.workspaceId, 10);
     const workspaceData = Array.isArray(workspace) ? workspace.find((ws) => ws.id === id) : null;
+
+    const { inviteCode } = useParams();
+    if(inviteCode !== workspaceData.inviteCode){
+        toast.error("Invite code is not valid!")
+    }
    
     return (
         <Card className="w-full h-full border-none shadow-none">
