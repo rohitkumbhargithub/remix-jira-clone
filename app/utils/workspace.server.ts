@@ -349,7 +349,9 @@ export const updateAsMemberInWorkspace = async (
         },
       });
      
-    }else{
+    }
+
+    if (memberData[0].role === "ADMIN") {
       updateMember = await prisma.member.update({
         where: {
           id: memberData[0].id,
@@ -358,6 +360,7 @@ export const updateAsMemberInWorkspace = async (
           role: MemberRole.MEMBER,
         },
       });
+     
     }
   }
   return updateMember;
