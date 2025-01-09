@@ -25,9 +25,23 @@ export const MembersList = () => {
     const userIdsInCurrentWorkspace = membersInCurrentWorkspace.map(member => member.userId);
 
     // Find the user information for these user IDs
-    const usersInCurrentWorkspace = data.user.filter(user => userIdsInCurrentWorkspace.includes(user.id));
+    const userRoles = membersInCurrentWorkspace.map(member => ({
+        userId: member.userId,
+        role: member.role,
+      }));
 
-    const users = usersInCurrentWorkspace;
+      const usersInCurrentWorkspace = data.user.filter(user =>
+        userRoles.some(userRole => userRole.userId === user.id)
+      ).map(user => {
+        // Step 3: Attach the role to each user based on userId
+        const userRole = userRoles.find(userRole => userRole.userId === user.id);
+        return {
+          ...user, // Copy the user properties
+          role: userRole ? userRole.role : 'MEMBER', // Add role (default to 'MEMBER' if not found)
+        };
+      });
+
+      const users = usersInCurrentWorkspace;
 
     const [DeleteDialog, confirmDelete] = useConfirm(
         "Delete task",
@@ -88,7 +102,7 @@ export const MembersList = () => {
                             name={member.name}
                             />
                             <div className="flex flex-col">
-                                <p className="text-sm font-medium">{member.name}</p>
+                                <p className="text-sm font-medium">{member.name} <small>({member.role})</small></p>
                                 <p className="text-xs text-muted-foreground">{member.email}</p>
                             </div>
                             <input type="hidden" name="memberId" value={member.id} />

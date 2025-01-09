@@ -67,7 +67,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       );
     
       const formData = await parseMultipartFormData(request, uploadHandler);
-      console.log(formData)
       imageUrl = formData.get("img"); 
     } else {
       imageUrl = ""; 
@@ -89,8 +88,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
 const WorkspaceCreate = () => {
     const { user, workspaces, workspaceId} = useLoaderData() || {};
-    console.log(workspaces);
-
     const navigate = useNavigate();
     
       useEffect(() => {

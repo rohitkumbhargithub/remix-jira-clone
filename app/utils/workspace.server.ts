@@ -249,6 +249,32 @@ export const deleteMemberInWorkspace = async (
     throw new Error("User must be logged in to view workspaces.");
   }
 
+  // const memberData = await prisma.member.findMany({
+  //   where: {
+  //     userId: Number(memerId),
+  //     workspaceId: Number(workspaceId),
+  //   },
+  // });
+
+  // if (memberData[0].role === "ADMIN") {
+  //   throw new Error("You can't delete");
+  // }
+
+
+  // if(memberData[0].userId === user.id){
+  //   throw new Error("You can't delete");
+  // }
+
+  // console.log(memberData)
+
+  // const deleteMember = await prisma.member.delete({
+  //   where: {
+  //     id: memberData[0].id,
+  //   },
+  // });
+
+  // return deleteMember;
+  let deleteMember;
   const memberData = await prisma.member.findMany({
     where: {
       userId: Number(memerId),
@@ -256,13 +282,9 @@ export const deleteMemberInWorkspace = async (
     },
   });
 
-  if (memberData[0].role === "ADMIN") {
-    throw new Error("You can't delete");
-  }
-
   const workspaceMemeber = await prisma.member.findMany({
     where: {
-      userId: Number(memerId),
+      workspaceId: Number(workspaceId)
     },
   });
 
@@ -270,12 +292,24 @@ export const deleteMemberInWorkspace = async (
     throw new Error("failed to delete");
   }
 
-  const deleteMember = await prisma.member.delete({
-    where: {
-      id: memberData[0].id,
-    },
-  });
+  const isUserInWorkspace = workspaceMemeber.find(member => member.userId === user.id && member.role === MemberRole.ADMIN);
 
+  if(isUserInWorkspace){
+    if (memberData[0].role === "MEMBER") {
+      deleteMember = await prisma.member.delete({
+        where: {
+          id: memberData[0].id,
+        }
+      });
+     
+    }else{
+      deleteMember = await prisma.member.delete({
+        where: {
+          id: memberData[0].id,
+        },
+      });
+    }
+  }
   return deleteMember;
 };
 
@@ -299,7 +333,7 @@ export const updateAsMemberInWorkspace = async (
 
   const workspaceMemeber = await prisma.member.findMany({
     where: {
-      userId: Number(memerId),
+      workspaceId: Number(workspaceId)
     },
   });
 
@@ -307,63 +341,61 @@ export const updateAsMemberInWorkspace = async (
     throw new Error("failed to update");
   }
 
-  // if (memberData[0].role !== 'ADMIN') {
-  //   updateMember = await prisma.member.update({
-  //     where: {
-  //       id: memberData[0].id,
-  //     },
-  //     data: {
-  //       role: MemberRole.ADMIN
-  //     }
-  //   });
-  // }
+  const isUserInWorkspace = workspaceMemeber.find(member => member.userId === user.id && member.role === MemberRole.ADMIN || MemberRole.MEMBER);
 
-  if (memberData[0].role === "ADMIN") {
-    throw new Error("failed to update");
+  if(isUserInWorkspace){
+    if (memberData[0].role === "MEMBER") {
+      updateMember = await prisma.member.update({
+        where: {
+          id: memberData[0].id,
+        },
+        data: {
+          role: MemberRole.ADMIN,
+        },
+      });
+     
+    }else{
+      updateMember = await prisma.member.update({
+        where: {
+          id: memberData[0].id,
+        },
+        data: {
+          role: MemberRole.MEMBER,
+        },
+      });
+    }
   }
-
-  if (memberData[0].role === "MEMBER") {
-    updateMember = await prisma.member.update({
-      where: {
-        id: memberData[0].id,
-      },
-      data: {
-        role: MemberRole.ADMIN,
-      },
-    });
-  }
-
   return updateMember;
 };
 
-export const updateAsAdminInWorkspace = async (
-  memerId: MemberId,
-  workspaceId: WorkspaceId,
-  request: Request
-) => {
-  const user = await getUserSession(request);
-  if (!user) {
-    throw new Error("User must be logged in to view workspaces.");
-  }
+// export const updateAsAdminInWorkspace = async (
+//   memerId: MemberId,
+//   workspaceId: WorkspaceId,
+//   request: Request
+// ) => {
+//   const user = await getUserSession(request);
+//   if (!user) {
+//     throw new Error("User must be logged in to view workspaces.");
+//   }
 
-  const memberData = await prisma.member.findMany({
-    where: {
-      userId: Number(memerId),
-      workspaceId: Number(workspaceId),
-    },
-  });
+//   const memberData = await prisma.member.findMany({
+//     where: {
+//       userId: Number(memerId),
+//       workspaceId: Number(workspaceId),
+//     },
+//   });
 
-  const updateMember = await prisma.member.update({
-    where: {
-      id: memberData[0].id,
-    },
-    data: {
-      role: MemberRole.ADMIN,
-    },
-  });
+//   const updateMember = await prisma.member.update({
+//     where: {
+//       id: memberData[0].id,
+//     },
+//     data: {
+//       role: MemberRole.ADMIN,
+//     },
+//   });
 
-  return updateMember;
-};
+//   return updateMember;
+// };
 
 export const getJoinedWorkspace = async (params: Params, request: Request) => {
   const user = await getUserSession(request);

@@ -29,29 +29,29 @@ import Logo from "~/componets/utils/logo.png";
 //   },
 // ];
 
-export function Layout({ children }: { children: React.ReactNode }) {
-  const navigation = useNavigation();
+  export function Layout({ children }: { children: React.ReactNode }) {
+    const navigation = useNavigation();
 
-  return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href={Logo} type="image/x-icon" />
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        {/* Show Loading component during navigation */}
-        {navigation.state === "loading" && <Loading />}
-        <main>{children}</main>
-        <ScrollRestoration />
-        <Toaster />
-        <Scripts />
-      </body>
-    </html>
-  );
-}
+    return (
+      <html lang="en">
+        <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href={Logo} type="image/x-icon" />
+          <Meta />
+          <Links />
+        </head>
+        <body>
+          {/* Show Loading component during navigation */}
+          {navigation.state === "loading" && <Loading />}
+          <main>{children}</main>
+          <Toaster />
+          <ScrollRestoration />
+          <Scripts />
+        </body>
+      </html>
+    );
+  }
 
 export default function App() {
   return <Outlet />;
