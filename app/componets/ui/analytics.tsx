@@ -58,7 +58,6 @@ export const Analytics = () => {
                         variant={inCompletedTask.inCompleteTaskDifference > 0 ? "up": "down"}
                         increaseValue={inCompletedTask.inCompleteTaskDifference}
                     />
-                    <DottedSperator direction="vertical" />
                 </div>
             </div>
             <ScrollBar orientation="horizontal" />

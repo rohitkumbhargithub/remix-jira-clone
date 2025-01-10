@@ -23,7 +23,14 @@ import { generateInviteCode } from "~/lib/utils";
 import { createProject, getProjectsByWorkspace } from "~/utils/project.server";
 import { useWorkspaceId } from "~/hooks/user-workspaceId";
 import { Button } from "~/components/ui/button";
-import { CalendarIcon, PlusIcon, SettingsIcon } from "lucide-react";
+import {
+  CalendarIcon,
+  FileChartLine,
+  LayoutList,
+  PlusIcon,
+  SettingsIcon,
+  UsersRoundIcon,
+} from "lucide-react";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { Card, CardContent } from "~/components/ui/card";
 import { ProjectAvatar } from "~/projects/components/project-avatar";
@@ -233,7 +240,9 @@ export const ProjectList = ({ data, total }: ProjectListProps) => {
       <ProjectModal isOpen={isModalOpen} onClose={closeModal} />
       <div className="bg-white border rounded-lg p-4">
         <div className="flex items-center justify-between">
-          <p className="text-lg font-semibold">Projects ({total})</p>
+          <p className="text-lg font-semibold inline-flex items-center">
+            <FileChartLine className="w-5 h-5 mr-2" /> Projects ({total})
+          </p>
           <Button variant="default" size="icon" onClick={openModal}>
             <PlusIcon className="size-4 text-neutral-400" />
           </Button>
@@ -300,7 +309,9 @@ export const TaskList = ({ data, total }: TaskListProps) => {
       />
       <div className="bg-muted rounded-lg p-4">
         <div className="flex items-center justify-between">
-          <p className="text-lg font-semibold">Tasks ({total})</p>
+        <p className="text-lg font-semibold inline-flex items-center">
+            <LayoutList className="w-5 h-5 mr-2" /> Tasks ({total})
+          </p>
           <Button variant="secondary" size="icon" onClick={openModal}>
             <PlusIcon className="size-4 text-neutral-400" />
           </Button>
@@ -351,7 +362,9 @@ export const MemberList = ({ data, total }: MemberListProps) => {
     <div className="flex flex-col gap-y-4 col-span-1">
       <div className="bg-white border rounded-lg p-4">
         <div className="flex items-center justify-between">
-          <p className="text-lg font-semibold">Members ({total})</p>
+        <p className="text-lg font-semibold inline-flex items-center">
+            <UsersRoundIcon className="w-5 h-5 mr-2" /> Members ({total})
+          </p>
           <Button asChild variant="secondary" size="icon">
             <Link to={`/workspaces/${workspaceId}/members`}>
               <SettingsIcon className="size-4 text-neutral-400" />

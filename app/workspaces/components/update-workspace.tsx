@@ -1,5 +1,5 @@
 import { Form, Link, useFetcher, useLoaderData, useNavigate, useNavigation } from "@remix-run/react";
-import { ArrowLeftIcon, CopyIcon, ImageIcon } from "lucide-react";
+import { ArrowLeftIcon, CombineIcon, CopyIcon, FolderCog, ImageIcon, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -158,6 +158,7 @@ export const UpdateWorkspaceForm = ({
               Back
             </Button>
           </Link>
+          <div className="inline-flex items-center"><FolderCog /></div>
           <CardTitle className="text-xl font-bold">
             {workspaceData.name}
           </CardTitle>
@@ -279,7 +280,7 @@ export const UpdateWorkspaceForm = ({
         <Card className="w-full h-full border-none shadow-none">
           <CardContent className="p-7">
             <div className="flex flex-col">
-              <h3 className="font-bold">Invite Member</h3>
+            <div className="inline-flex items-center"><CombineIcon /><h3 className="font-bold m-2"> Invite Member</h3></div>
               <p className="text-sm text-muted-foreground">
                 Use the invite link to add memebers to your workspace
               </p>
@@ -315,7 +316,7 @@ export const UpdateWorkspaceForm = ({
         <Card className="w-full h-full border-none shadow-none mt-6">
           <CardContent className="p-7">
             <div className="flex flex-col">
-              <h3 className="font-bold">Danger Zone</h3>
+              <div className="inline-flex items-center"><TriangleAlert /><h3 className="font-bold m-2"> Danger Zone</h3></div>
               <p className="text-sm text-muted-foreground">
                 Deleting a workspace is irrevesible and will remove all
                 assocaiated data

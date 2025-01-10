@@ -4,8 +4,6 @@ import { FormStrategy } from "remix-auth-form";
 import { prisma } from "./prisma.server";
 import bcrypt from 'bcryptjs';
 
-
-
 const sessionSecret = process.env.SESSION_SCERAT;
 if(!sessionSecret){
     throw new Error("SESSION_SCERAT must be set")

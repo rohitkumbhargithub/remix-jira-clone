@@ -1,4 +1,4 @@
-import { PlusIcon } from "lucide-react";
+import { Calendar, Kanban, PlusIcon, Table } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { Button } from "~/components/ui/button";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
@@ -122,13 +122,22 @@ export const TaskViewSwitcher = ({
               value="table"
               onClick={() => setView("table")}
             >
-              Table
+               <div className="inline-flex items-center">
+                <Table className="size-3 m-1"/>
+                Table
+              </div>
             </TabsTrigger>
             <TabsTrigger className="h-8 w-full lg:w-auto" value="kanban">
-              Kanban
+            <div className="inline-flex items-center">
+                <Kanban className="size-3 m-1"/>
+                Kanban
+              </div>
             </TabsTrigger>
             <TabsTrigger className="h-8 w-full lg:w-auto" value="calender">
-              Calendar
+            <div className="inline-flex items-center">
+                <Calendar className="size-3 m-1"/>
+                Calender
+              </div>
             </TabsTrigger>
           </TabsList>
           <Button size="sm" className="w-full lg:w-auto" onClick={openModal}>

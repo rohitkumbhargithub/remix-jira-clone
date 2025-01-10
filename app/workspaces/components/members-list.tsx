@@ -5,7 +5,7 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Form, Link, useLoaderData, useNavigate } from "@remix-run/react";
-import { ArrowLeftIcon, MoreVerticalIcon } from "lucide-react";
+import { ArrowLeftIcon, MoreVerticalIcon, ShieldAlert, UsersRoundIcon } from "lucide-react";
 import { Fragment } from "react/jsx-runtime";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -17,6 +17,7 @@ import { useWorkspaceId } from "~/hooks/user-workspaceId";
 
 export const MembersList = () => {
   const user = useLoaderData();
+  const { workspaceAdmin } = useLoaderData();
   const data = user;
   const navigate = useNavigate();
 
@@ -94,9 +95,19 @@ export const MembersList = () => {
             Back
           </Link>
         </Button>
-        <CardTitle className="text-xl font-bold">Members List</CardTitle>
+        <CardTitle className="text-xl font-bold"><p className="text-lg font-semibold inline-flex items-center">
+            <UsersRoundIcon className="w-5 h-5 mr-2" /> Members List
+          </p></CardTitle>
       </CardHeader>
       <div className="px-7">
+        <div className="inline-flex items-center">
+          <ShieldAlert className="w-4 h-4 m-1" />
+          <small>
+            Only Workspace Admin Has Permission to Manage Roles and Delete
+            Members.
+          </small>
+        </div>
+
         <DottedSperator />
       </div>
       <Form method="post">
@@ -111,7 +122,14 @@ export const MembersList = () => {
                 />
                 <div className="flex flex-col">
                   <p className="text-sm font-medium">
-                    {member.name} <small>({member.role})</small>
+                    {member.name}{" "}
+                    {
+                      workspaceAdmin.userId === member.id ? (
+                        <small>({`WORKSPACE ${member.role}`})</small> // Content when condition is true
+                      ) : (
+                        <small>({member.role})</small>
+                      ) // Content when condition is false
+                    }
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {member.email}

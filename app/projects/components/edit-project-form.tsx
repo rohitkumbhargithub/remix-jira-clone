@@ -1,10 +1,9 @@
 import { Form, Link, useFetcher, useNavigate, useNavigation } from "@remix-run/react";
-import { ArrowLeftIcon, CopyIcon, ImageIcon } from "lucide-react";
+import { ArrowLeftIcon, ImageIcon, MonitorCog, TriangleAlert } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import { Input } from "~/components/ui/input";
 import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { useConfirm } from "~/features/hooks/useConfirm";
 import { useProjectId } from "~/hooks/user-projectId";
@@ -138,6 +137,7 @@ export const EditProjectForm = ({
               Back
             </Button>
           </Link>
+          <div className="inline-flex items-center"><MonitorCog /></div>
           <CardTitle className="text-xl font-bold">
             {projectData.name}
           </CardTitle>
@@ -262,7 +262,7 @@ export const EditProjectForm = ({
         <Card className="w-full h-full border-none shadow-none mt-6">
           <CardContent className="p-7">
             <div className="flex flex-col">
-              <h3 className="font-bold">Danger Zone</h3>
+            <div className="inline-flex items-center"><TriangleAlert /><h3 className="font-bold m-2"> Danger Zone</h3></div>
               <p className="text-sm text-muted-foreground">
                 Deleting a project is irrevesible and will remove all
                 assocaiated data

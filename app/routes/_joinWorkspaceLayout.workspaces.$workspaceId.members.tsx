@@ -1,16 +1,17 @@
 import { LoaderFunction, redirect } from "@remix-run/node";
-import { MetaFunction, useActionData } from "@remix-run/react";
-import { json } from "@remix-run/react";
+import { json, MetaFunction, useActionData, useLoaderData } from "@remix-run/react";
 import { useEffect } from "react";
-import { toast } from "sonner";
 import { authenticator } from "~/utils/auth.server";
 import { getAllUsers } from "~/utils/user.server";
 import {
   deleteMemberInWorkspace,
   getAllMemeber,
+  getAllWorkspaces,
   updateAsMemberInWorkspace,
 } from "~/utils/workspace.server";
 import { MembersList } from "~/workspaces/components/members-list";
+import { toast } from "sonner";
+import { number } from "zod";
 
 export const meta: MetaFunction = () => {
   return [
@@ -20,14 +21,16 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader: LoaderFunction = async ({ request, params }) => {
-  await authenticator.isAuthenticated(request, {
+ await authenticator.isAuthenticated(request, {
     failureRedirect: "/sign-in",
   });
   const workspaceId = params.workspaceId;
   const members = await getAllMemeber(request);
   const user = await getAllUsers();
+  const workspace = await getAllWorkspaces(request);
+  const workspaceAdmin = workspace.find(w => w.id === Number(workspaceId));
   if (!workspaceId) redirect("/");
-  return { workspaceId, members, user };
+  return { workspaceId, members, user, workspaceAdmin };
 };
 
 export const action = async ({ request, params }) => {
@@ -46,19 +49,23 @@ export const action = async ({ request, params }) => {
       return redirect(`/workspaces/${workspaceId}/members`);
     }
   } catch (error) {
+    // console.log(error.message)
     return json({ error: error.message }, { status: 400 });
   }
 };
 
 const Memebers = () => {
   const actionData = useActionData();
+  // toast.error("sdasdasd")
   useEffect(() => {
     if (actionData?.error) {
       toast.error(actionData.error);
+      // console.log(actionData.error);
     } else if (actionData?.success) {
-      toast.success(actionData.success); 
+      toast.success(actionData.success);
     }
   }, [actionData]);
+  // console.log(actionData)
 
   return (
     <div className="w-full lg:max-w-xl">

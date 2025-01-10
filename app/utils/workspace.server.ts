@@ -332,13 +332,23 @@ export const updateAsMemberInWorkspace = async (
     },
   });
 
+  const workspace = await prisma.workspace.findMany({
+    where: {
+      id: Number(workspaceId)
+    }
+  });
+
+
   if (workspaceMemeber.length === 1) {
     throw new Error("failed to update");
   }
 
-  const isUserInWorkspace = workspaceMemeber.find(member => member.userId === user.id && member.role === MemberRole.ADMIN || MemberRole.MEMBER);
 
-  if(isUserInWorkspace){
+  if(workspace[0].userId === user.id){
+    if(workspace[0].userId === Number(memerId)){
+      throw new Error("failed to update");
+    }
+
     if (memberData[0].role === "MEMBER") {
       updateMember = await prisma.member.update({
         where: {
@@ -364,7 +374,44 @@ export const updateAsMemberInWorkspace = async (
     }
   }
   return updateMember;
-};
+  }
+
+  // if(workspace[0].userId !== Number(memerId)){
+  //   const isUserInWorkspace = workspaceMemeber.find(member => member.userId === Number(memerId) && member.role === MemberRole.ADMIN || MemberRole.MEMBER);
+
+  // if(!isUserInWorkspace){
+  //   throw new Error("Failed to update!");
+  // }
+
+  // if(isUserInWorkspace){
+  //   if (memberData[0].role === "MEMBER") {
+  //     updateMember = await prisma.member.update({
+  //       where: {
+  //         id: memberData[0].id,
+  //       },
+  //       data: {
+  //         role: MemberRole.ADMIN,
+  //       },
+  //     });
+     
+  //   }
+
+  //   if (memberData[0].role === "ADMIN") {
+  //     updateMember = await prisma.member.update({
+  //       where: {
+  //         id: memberData[0].id,
+  //       },
+  //       data: {
+  //         role: MemberRole.MEMBER,
+  //       },
+  //     });
+     
+  //   }
+  // }
+  // }
+  
+  // console.log(updateMember)
+  
 
 // export const updateAsAdminInWorkspace = async (
 //   memerId: MemberId,
