@@ -36,26 +36,31 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const [selectedRows, setSelectedRows] = React.useState<Set<number>>(
-    new Set()
-  );
+  const [selectedRows, setSelectedRows] = React.useState(new Set());
 
-  const handleSelectAll = (isChecked: boolean) => {
-    if (isChecked) {
-      setSelectedRows(new Set(data.map((row, idx) => idx)));
-    } else {
-      setSelectedRows(new Set());
-    }
+  const handleSelectRow = (index, isSelected) => {
+    setSelectedRows((prevSelectedRows) => {
+      const newSelectedRows = new Set(prevSelectedRows);
+      if (isSelected) {
+        newSelectedRows.add(index);
+      } else {
+        newSelectedRows.delete(index);
+      }
+      return newSelectedRows;
+    });
   };
 
-  const handleSelectRow = (index: number, isChecked: boolean) => {
-    const newSelectedRows = new Set(selectedRows);
-    if (isChecked) {
-      newSelectedRows.add(index);
-    } else {
-      newSelectedRows.delete(index);
-    }
-    setSelectedRows(newSelectedRows);
+  const handleSelectAll = (isSelected) => {
+    setSelectedRows((prevSelectedRows) => {
+      const newSelectedRows = new Set();
+      if (isSelected) {
+        // Select all rows (handle pagination if necessary)
+        table
+          .getRowModel()
+          .rows.forEach((row) => newSelectedRows.add(row.index));
+      }
+      return newSelectedRows;
+    });
   };
 
   const table = useReactTable({
@@ -73,7 +78,7 @@ export function DataTable<TData, TValue>({
             onChange={(e) => handleSelectAll(e.target.checked)}
           />
         ),
-        cell: ({ row, table }) => (
+        cell: ({ row }) => (
           <input
             type="checkbox"
             checked={selectedRows.has(row.index)}
@@ -133,26 +138,27 @@ export function DataTable<TData, TValue>({
           </TableHeader>
           <TableBody>
             {table.getPaginationRowModel().rows?.length ? (
-              table
-                .getPaginationRowModel()
-                .rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
+              table.getPaginationRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id}>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length + 1} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length + 1}
+                  className="h-24 text-center"
+                >
                   No results.
                 </TableCell>
               </TableRow>
