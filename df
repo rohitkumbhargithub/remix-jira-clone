@@ -1,0 +1,239 @@
+[33mcommit 1e1d3ea9e9f127d847a3020b7cdc5110f8ff7308[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Thu Jan 16 17:43:13 2025 +0530
+
+    added toast 1
+
+[33mcommit ec833b4e3f7f84fb71aaca4692194c8a4302b66b[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Mon Jan 13 19:30:36 2025 +0530
+
+    added checkbox
+
+[33mcommit 09d3f0c268faaf65231b114fe580fb243a3fa43e[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Jan 10 16:30:46 2025 +0530
+
+    added icons
+
+[33mcommit 9d2548c604e000278c9183e665b35fc76d4e93fd[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Thu Jan 9 16:03:20 2025 +0530
+
+    table pagination
+
+[33mcommit 1ec22d9b2cc2260e9f626f61c5e6620dd3c1c57d[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Thu Jan 9 14:43:51 2025 +0530
+
+    joined issue
+
+[33mcommit b5fbcfbbccf126533e8cef0b1e3d2091021c7fb9[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Thu Jan 9 13:15:13 2025 +0530
+
+    members code updated
+
+[33mcommit 918bf4c9a063183003a5a34b7e9cc49ee0d924c8[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Wed Jan 8 17:41:38 2025 +0530
+
+    changes images upload
+
+[33mcommit 607c7cfa1015e2aee5de7e02754a5b55eebf591b[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Jan 7 15:44:35 2025 +0530
+
+    added project icon
+
+[33mcommit 6fb72d157e1e425654d417f4fda9e46ecef4ab18[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Jan 7 15:22:34 2025 +0530
+
+    added forgot password
+
+[33mcommit d35e348b6442caa6593d6125496f2d569b69ca4d[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Dec 31 16:28:37 2024 +0530
+
+    added reset and forgot UI
+
+[33mcommit 486b4a5fc92b8c87f4b638ceb931e84b8c8aa586[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Dec 31 13:06:52 2024 +0530
+
+    change loader
+
+[33mcommit c658a03b842179cf20a8ac3d8fb06d124a765654[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Dec 31 13:00:47 2024 +0530
+
+    added confirm password
+
+[33mcommit 8d7088ae914305a3860340550b0cbe034eac4b51[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Dec 31 12:12:03 2024 +0530
+
+    github
+
+[33mcommit 65829aa95e04185008eb5588db4e08c49bc6f826[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Dec 31 12:01:19 2024 +0530
+
+    deploy github
+
+[33mcommit 7f76c6a9475d8aef62ead2890ea2e80daee28014[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Mon Dec 30 16:45:47 2024 +0530
+
+    show and hide password
+
+[33mcommit f0e7da397bb14a849ccc876dd765d97d61fccf64[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Mon Dec 30 16:37:47 2024 +0530
+
+    added loading show and hide password
+
+[33mcommit f6c1aa39a875eccf5f089795d8556c12462c9103[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Mon Dec 30 10:24:30 2024 +0530
+
+    update url
+
+[33mcommit 8c93f76190b70b7a774aa956afc138f0c28041ca[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Mon Dec 30 09:48:18 2024 +0530
+
+    added railway postgresSQL
+
+[33mcommit a817d2d7a88b7a406c2341dca84d43a05c07b801[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Dec 27 17:41:24 2024 +0530
+
+    added url
+
+[33mcommit 416f24ac825145d7d711b48e83f9e42de56f109d[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Dec 27 16:55:46 2024 +0530
+
+    cloudinary
+
+[33mcommit 30d51e4b441a258baf5636224f50a0968d33e820[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Dec 27 14:45:34 2024 +0530
+
+    render
+
+[33mcommit 6ef38760e0cc072e3eb6e9f52e5ba9da8288493c[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Dec 27 14:23:44 2024 +0530
+
+    add vercel
+
+[33mcommit ed63a1fe1e5dc352b7111d01d44554b4643172b8[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Dec 27 12:35:53 2024 +0530
+
+    build
+
+[33mcommit 013e537ac851f5e399b5a68b64e0723d8718b8b9[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Dec 27 12:24:54 2024 +0530
+
+    remove unused part
+
+[33mcommit 25b72fe43b5d1df4b666efefd8e507f48fbebafd[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Thu Dec 19 16:42:53 2024 +0530
+
+    sidebar
+
+[33mcommit 978a8b826ae3a0cd4cdf77de426bcf9911a5669f[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Thu Dec 19 12:30:01 2024 +0530
+
+    update delete
+
+[33mcommit 0d762f936e38d8e7bd6a8cd2d871a1de91bff26b[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Thu Dec 19 12:13:32 2024 +0530
+
+    update tasks 2
+
+[33mcommit bb53f47a0b171e4d54bcdf8d0f2ceff18f33caa3[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Thu Dec 19 11:30:11 2024 +0530
+
+    update tasks
+
+[33mcommit 666a94747f3f881701eb644ad6b2c703a0639abc[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Wed Dec 18 17:58:49 2024 +0530
+
+    workspace-switcher project
+
+[33mcommit 043588eee7d0d697ee239db1e8e8f0d53032561c[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Dec 17 16:47:51 2024 +0530
+
+    edit task
+
+[33mcommit 2354d5011dcac7c4e4194341007dc9875df78606[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Dec 13 17:47:56 2024 +0530
+
+    added
+
+[33mcommit b4680a7b6a51502b1103800ac781162c0b73ab20[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Nov 26 16:07:49 2024 +0530
+
+    update join
+
+[33mcommit 24cf3a120ec926252fcc90482dea6f8822339c29[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Tue Nov 26 15:26:03 2024 +0530
+
+    join workspace
+
+[33mcommit b7aff10802f5d15b7009f6318bdb2c723d2f8941[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Mon Nov 25 16:16:18 2024 +0530
+
+    calender view
+
+[33mcommit 1d76b73c1d36fbe557e1f3dfa0968c4e9c2b6536[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Sat Nov 23 17:10:25 2024 +0530
+
+    kanban view complete
+
+[33mcommit bc07d51e6fcf962524ad8eca593c5aed00c5ef88[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Nov 22 17:09:22 2024 +0530
+
+    task update
+
+[33mcommit 387a94dd65c67fada7ee612c2e5c86dd233c3065[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Fri Nov 15 13:03:50 2024 +0530
+
+    tasks
+
+[33mcommit 1dac10f27dde1e3f5e8e46bcfc2dac42fdc8f1a6[m
+Author: rohitkumbhargithub <rohitkumbhar956.gmail.com>
+Date:   Wed Nov 13 16:25:37 2024 +0530
+
+    first commit
+
+[33mcommit e6fd46d7afc668ef394e59c62338142e83aff072[m
+Author: AlgoPrashant <prashant.verma@algorisys.com>
+Date:   Wed Nov 13 16:07:45 2024 +0530
+
+    tasks
+
+[33mcommit 671c000476d3739586d3bb47ed5b8dabe8292d0c[m
+Author: AlgoPrashant <prashant.verma@algorisys.com>
+Date:   Thu Oct 31 15:25:54 2024 +0530
+
+    first commit
