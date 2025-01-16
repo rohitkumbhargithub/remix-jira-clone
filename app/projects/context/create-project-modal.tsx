@@ -8,15 +8,10 @@ export const CreateProjectModal = () => {
   const { isModalOpen, closeModal } = useCreateWorkspaceModal();  
   const [searchParams, setSearchParams] = useSearchParams();
   const modal = searchParams.get("create-project") === "true"; 
-  const handleCloseModal = () => {
-    searchParams.delete("create-project");
-    setSearchParams(searchParams); 
-    closeModal(); 
-  };
 
   return (
-    <ResponsiveModal open={modal}>
-      <Modal isOpen={modal} onClose={handleCloseModal} />
+    <ResponsiveModal open={isModalOpen}>
+      <Modal isOpen={modal} onClose={closeModal} />
     </ResponsiveModal>
   );
 };

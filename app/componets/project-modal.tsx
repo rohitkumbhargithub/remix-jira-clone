@@ -10,9 +10,14 @@ interface ProjectModalProps {
 export default function ProjectModal({ isOpen, onClose }: ProjectModalProps) {
   const { workspaceId } = useParams();
 
+  const handleSuccess = () => {
+    // Close the modal when form submission is successful
+    onClose();
+  };
+
   return (
     <ResponsiveModal open={isOpen}>
-        <CreateProjectForm onCancel={onClose} actionUrl={`/workspaces/${workspaceId}`} />
+      <CreateProjectForm onCancel={onClose} onSuccess={handleSuccess} actionUrl={`/workspaces/${workspaceId}`} />
     </ResponsiveModal>
   );
 }

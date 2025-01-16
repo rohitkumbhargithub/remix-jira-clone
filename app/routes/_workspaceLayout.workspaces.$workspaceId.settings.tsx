@@ -68,7 +68,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
         if(workspace.length === 0){
           return redirect(`/workspaces/create`);
         }
-        return redirect(`/workspaces/${workspace[0].id}`);
+        return redirect(`/workspaces/${workspace[0].id}?success=Workspace%20deleted`);
       } catch (error) {
         console.error("Error deleting workspace:", error);
         return json({ error: "Failed to delete workspace." }, { status: 400 });
@@ -115,7 +115,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   
     try {
       await UpdateWorkspace(workspaceData, workspaceId, request);
-      return redirect(`/workspaces/${workspaceId}`);
+      return redirect(`/workspaces/${workspaceId}?success=Workspace%20updated`);
     } catch (error) {
       console.error("Error updating workspace:", error);
       return json({ error: error.message }, { status: 400 });

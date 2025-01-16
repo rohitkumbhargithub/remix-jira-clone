@@ -48,12 +48,8 @@ export const CreateTaskForm = ({
   const [selectedProject, setSelectedProject] = useState<string>("");
   const [selectedAssignee, setSelectedAssignee] = useState<string>("");
 
-  // useEffect(() => {
-  //   setSelectedWorkspaceId(workspaceId);
-  // }, [workspaceId]);
-
   const handleStatusChange = (value: string) => {
-    setSelectedStatus(value); // Update the selected status
+    setSelectedStatus(value);
   };
 
   const projectOptions = projects;
@@ -91,6 +87,13 @@ export const CreateTaskForm = ({
     }));
   };
 
+  const handleSubmit = () => {
+    if(!selectedStatus || !dueDate){
+      toast.error("All filed required!")
+      return;
+    }
+    onCancel();
+  };
 
   return (
     <div className="w-full h-full border-none shadow-none bg-white rounded-lg p-5">
@@ -103,7 +106,7 @@ export const CreateTaskForm = ({
           method="post"
           encType="multipart/form-data"
           action={actionUrl}
-          // onSubmit={handleSubmit}
+          onSubmit={handleSubmit}
         >
           <input type="hidden" name="_method" value="POST" />
 
@@ -146,6 +149,7 @@ export const CreateTaskForm = ({
                 value={selectedAssignee.id}
                 onValueChange={handleAssigneeChange}
                 name="assigneeId"
+                required
               >
                 <SelectTrigger>
                   {selectedAssignee ? (
@@ -182,6 +186,7 @@ export const CreateTaskForm = ({
                 value={selectedStatus}
                 onValueChange={handleStatusChange}
                 name="status"
+                required
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select Status" />
@@ -208,6 +213,7 @@ export const CreateTaskForm = ({
                 value={selectedProject.id}
                 onValueChange={handleProjectChange}
                 name="projectId"
+                required
               >
                 <SelectTrigger>
                   {selectedProject ? (
@@ -256,7 +262,13 @@ export const CreateTaskForm = ({
               Cancel
             </Button>
 
-            <Button type="submit" name="task" size="lg" disabled={isPending} onClick={onCancel}>
+            <Button
+              type="submit"
+              name="task"
+              size="lg"
+              disabled={isPending}
+              onClick={() => setIsSubmitted(true)}
+            >
               Create Task
             </Button>
           </div>

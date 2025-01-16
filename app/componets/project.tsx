@@ -14,9 +14,8 @@ const Project = ({projects = []}) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const openModal = () => {
-    searchParams.set("create-project", "true");
-    setSearchParams(searchParams);
     setIsModalOpen(true);
+    setSearchParams({ "create-project": "true" });
   };
 
   const closeModal = () => {

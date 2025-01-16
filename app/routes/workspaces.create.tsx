@@ -80,14 +80,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     
     try {
       const newWorkspace = await createWorkspaces(workspace, request);
-      return redirect(`/workspaces/${newWorkspace?.id}`);
+      return redirect(`/workspaces/${newWorkspace?.id}?success=Workspace%20created%20successfully`);
     } catch (error) {
       return json({ error: error.message }, { status: 400 });
     }
   };
 
 const WorkspaceCreate = () => {
-    const { user, workspaces, workspaceId} = useLoaderData() || {};
+    const { workspaces, workspaceId} = useLoaderData() || {};
     const navigate = useNavigate();
     
       useEffect(() => {

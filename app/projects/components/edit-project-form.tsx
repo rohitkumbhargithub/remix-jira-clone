@@ -1,5 +1,16 @@
-import { Form, Link, useFetcher, useNavigate, useNavigation } from "@remix-run/react";
-import { ArrowLeftIcon, ImageIcon, MonitorCog, TriangleAlert } from "lucide-react";
+import {
+  Form,
+  Link,
+  useFetcher,
+  useNavigate,
+  useNavigation,
+} from "@remix-run/react";
+import {
+  ArrowLeftIcon,
+  ImageIcon,
+  MonitorCog,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -32,12 +43,11 @@ export const EditProjectForm = ({
   const workspaceId = useWorkspaceId();
   const navigate = useNavigate();
   const [imagePreview, setImagePreview] = useState(null);
-  const [isSubmitted, setIsSubmitted] = useState(false); // Track form submission state
+  const [isSubmitted, setIsSubmitted] = useState(false); 
   const navigation = useNavigation();
   const isPending = navigation.state === "submitting";
   const id = Number(initialValues);
 
-  
   const fetcher = useFetcher();
 
   const projectData = projectsData.find((project) => project.id === id);
@@ -56,7 +66,7 @@ export const EditProjectForm = ({
     }
   };
 
-  const handleButtonRemove = async(actionValue) => {
+  const handleButtonRemove = async (actionValue) => {
     setUploaded(false);
     setImagePreview(null);
     setImage("");
@@ -97,7 +107,6 @@ export const EditProjectForm = ({
     }
   };
 
-
   const handleSubmit = () => {
     setIsSubmitted(true);
   };
@@ -106,7 +115,7 @@ export const EditProjectForm = ({
     "Delete Project",
     "This action cannot be undone",
     "destructive"
-  ); 
+  );
 
   const handleDelete = async (event) => {
     event.preventDefault(); // Prevent the default form submission
@@ -125,19 +134,22 @@ export const EditProjectForm = ({
     }
   }, [fetcher.data]);
 
-
   return (
     <div className="flex flex-col gap-y-4">
       <DeleteDialog />
       <Card className="w-full h-full border-none shadow-none">
         <CardHeader className="flex flex-row items-center gap-x-4 p-7 space-y-0">
-          <Link to={`/workspaces/${projectData.workspaceId}/projects/${projectData.id}`}>
+          <Link
+            to={`/workspaces/${projectData.workspaceId}/projects/${projectData.id}`}
+          >
             <Button size="sm" variant="secondary">
               <ArrowLeftIcon className="size-4 mr-2" />
               Back
             </Button>
           </Link>
-          <div className="inline-flex items-center"><MonitorCog /></div>
+          <div className="inline-flex items-center">
+            <MonitorCog />
+          </div>
           <CardTitle className="text-xl font-bold">
             {projectData.name}
           </CardTitle>
@@ -191,10 +203,7 @@ export const EditProjectForm = ({
                         <div className="w-[72px] h-[72px] bg-gray-100 rounded-full flex items-center justify-center">
                           <ImageIcon className="text-gray-500 w-[36px] h-[36px]" />
                         </div>
-
-                      )
-                      }
-                     
+                      )}
                     </div>
                   )}
 
@@ -262,29 +271,31 @@ export const EditProjectForm = ({
         <Card className="w-full h-full border-none shadow-none mt-6">
           <CardContent className="p-7">
             <div className="flex flex-col">
-            <div className="inline-flex items-center"><TriangleAlert /><h3 className="font-bold m-2"> Danger Zone</h3></div>
+              <div className="inline-flex items-center">
+                <TriangleAlert />
+                <h3 className="font-bold m-2"> Danger Zone</h3>
+              </div>
               <p className="text-sm text-muted-foreground">
                 Deleting a project is irrevesible and will remove all
                 assocaiated data
               </p>
               <DottedSperator className="py-7" />
-              
-                <Button
-                  className="mt-6 w-fit ml-auto"
-                  size="sm"
-                  variant="destructive"
-                  type="submit"
-                  onClick={handleDelete}
-                  name="delete" value="delete"
-                >
-                  Delete Project
-                </Button>
-            
+
+              <Button
+                className="mt-6 w-fit ml-auto"
+                size="sm"
+                variant="destructive"
+                type="submit"
+                onClick={handleDelete}
+                name="delete"
+                value="delete"
+              >
+                Delete Project
+              </Button>
             </div>
-            
           </CardContent>
         </Card>
-        </Form>
+      </Form>
     </div>
   );
 };

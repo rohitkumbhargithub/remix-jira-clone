@@ -46,9 +46,10 @@ import { formatDistanceToNow } from "date-fns";
 import { Analytics } from "~/componets/ui/analytics";
 import { getAllUsers } from "~/utils/user.server";
 import { MemberAvatar } from "~/features/member/components/members-avatar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProjectModal from "~/componets/project-modal";
 import TaskModal from "~/componets/task-modal";
+import { toast } from "sonner";
 
 export const loader: LoaderFunction = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
@@ -70,6 +71,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     tasks = await getTask(request);
   }
 
+  const url = new URL(request.url);
+  const successMessage = url.searchParams.get("success");
+
   return {
     workspaceId,
     userData,
@@ -81,6 +85,7 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     completedTask,
     inCompletedTask,
     overDueTask,
+    successMessage
   };
 };
 
@@ -129,7 +134,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
     try {
       const newWorkspace = await createWorkspaces(workspace, request);
-      return redirect(`/workspaces/${newWorkspace?.id}`);
+      return redirect(`/workspaces/${newWorkspace?.id}?success=Workspace%20created`);
     } catch (error) {
       console.error("Error creating workspace:", error);
       return json({ error: error.message }, { status: 400 });
@@ -171,7 +176,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
     try {
       const newProject = await createProject(workspaceId, project, request);
-      return redirect(`/workspaces/${workspaceId}/projects/${newProject?.id}`);
+      return redirect(`/workspaces/${workspaceId}/projects/${newProject?.id}?success=Project%20created`);
     } catch (error) {
       console.error("Error creating project:", error);
       return json({ error: error.message }, { status: 400 });
@@ -180,7 +185,7 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 };
 
 const WorkspaceId = () => {
-  const { projects, tasks, members } = useLoaderData();
+  const { projects, tasks, members, successMessage } = useLoaderData();
 
   const getUsersByWorkspaceId = (workspaceId) => {
     return members
@@ -200,6 +205,20 @@ const WorkspaceId = () => {
     (task) => task.workspaceId === Number(workspaceId)
   );
   const member = getUsersByWorkspaceId(Number(workspaceId));
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+  
+      // Create a URL object using the current window location
+      const currentUrl = new URL(window.location.href);
+      
+      // Remove the 'success' query parameter
+      currentUrl.searchParams.delete('success');
+      
+      // Replace the current URL in the browser's history without reloading the page
+      window.history.replaceState({}, '', currentUrl.toString());
+    }
+  }, [successMessage]);
 
   return (
     <div className="h-full flex flex-col space-y-4">
@@ -224,14 +243,13 @@ export const ProjectList = ({ data, total }: ProjectListProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const openModal = () => {
-    searchParams.set("edit-task", "true");
-    setSearchParams(searchParams);
     setIsModalOpen(true);
+    setSearchParams({ "create-project": "true" });
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
-    searchParams.delete("edit-task");
+    searchParams.delete("create-project");
     setSearchParams(searchParams);
   };
   const workspaceId = useWorkspaceId();
@@ -289,9 +307,8 @@ export const TaskList = ({ data, total }: TaskListProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const openModal = () => {
-    searchParams.set("create-task", "true");
-    setSearchParams(searchParams);
     setIsModalOpen(true);
+    setSearchParams({ "create-task": "true" });
   };
 
   const closeModal = () => {

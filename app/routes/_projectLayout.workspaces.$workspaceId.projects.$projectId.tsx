@@ -1,6 +1,15 @@
 import { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { json, Link, redirect, useLoaderData, useParams, useSearchParams } from "@remix-run/react";
+import {
+  json,
+  Link,
+  redirect,
+  useLoaderData,
+  useParams,
+  useSearchParams,
+} from "@remix-run/react";
 import { PencilIcon } from "lucide-react";
+import { useEffect } from "react";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Analytics } from "~/componets/ui/analytics";
 import { ProjectAvatar } from "~/projects/components/project-avatar";
@@ -8,7 +17,17 @@ import { TaskViewSwitcher } from "~/tasks/components/task-switcher";
 import { authenticator } from "~/utils/auth.server";
 import { getProjectsByWorkspace } from "~/utils/project.server";
 import { getUserSession } from "~/utils/session.server";
-import { createTask, deleteTask, getTask, getTotalAssignee, getTotalCompleteTask, getTotalInCompleteTask, getTotalOverDueTask, getTotalTasks, updateTask } from "~/utils/task.server";
+import {
+  createTask,
+  deleteTask,
+  getTask,
+  getTotalAssignee,
+  getTotalCompleteTask,
+  getTotalInCompleteTask,
+  getTotalOverDueTask,
+  getTotalTasks,
+  updateTask,
+} from "~/utils/task.server";
 import { getAllUsers } from "~/utils/user.server";
 import { getAllMemeber } from "~/utils/workspace.server";
 
@@ -21,7 +40,7 @@ export const meta: MetaFunction = () => {
 
 export const loader = async ({ request, params }) => {
   await authenticator.isAuthenticated(request, {
-    failureRedirect: "/sign-in"
+    failureRedirect: "/sign-in",
   });
   const user = await getUserSession(request);
   const members = await getAllMemeber(request);
@@ -33,14 +52,29 @@ export const loader = async ({ request, params }) => {
   const id = Number(workspaceId);
 
   const assignee = await getTotalAssignee(id, projectIdData);
-    const totalTask = await getTotalTasks(id, projectIdData);
-    const completedTask = await getTotalCompleteTask(id, projectIdData);
-    const inCompletedTask = await getTotalInCompleteTask(id, projectIdData);
-    const overDueTask = await getTotalOverDueTask(id, projectIdData);
-  
-  const projects = await getProjectsByWorkspace(request, id);
+  const totalTask = await getTotalTasks(id, projectIdData);
+  const completedTask = await getTotalCompleteTask(id, projectIdData);
+  const inCompletedTask = await getTotalInCompleteTask(id, projectIdData);
+  const overDueTask = await getTotalOverDueTask(id, projectIdData);
 
-  return { user, projects, projectId, members, userData, tasks, assignee, totalTask, completedTask, inCompletedTask, overDueTask};
+  const projects = await getProjectsByWorkspace(request, id);
+  const url = new URL(request.url);
+  const successMessage = url.searchParams.get("success");
+
+  return {
+    user,
+    projects,
+    projectId,
+    members,
+    userData,
+    tasks,
+    assignee,
+    totalTask,
+    completedTask,
+    inCompletedTask,
+    overDueTask,
+    successMessage,
+  };
 };
 
 export const action = async ({ request, params }: ActionFunctionArgs) => {
@@ -48,42 +82,44 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   const workspaceId = Number(params.workspaceId);
   const projectId = Number(form.get("projectId"));
 
-
   if (form.get("_method") === "POST") {
-  const name = form.get("taskName");
-  const date = form.get("dueDate");
-  const dueDateObj = new Date(date);
-  const dueDate = dueDateObj.toISOString();
-  const status = form.get("status");
-  const assigneeId = Number(form.get("assigneeId"));
+    const name = form.get("taskName");
+    const date = form.get("dueDate");
+    const dueDateObj = new Date(date);
+    const dueDate = dueDateObj.toISOString();
+    const status = form.get("status");
+    const assigneeId = Number(form.get("assigneeId"));
 
-  const position = 1000;
+    const position = 1000;
 
-  const tasks = {
-    name,
-    workspaceId,
-    assigneeId,
-    projectId,
-    dueDate,
-    status,
-    position,
+    const tasks = {
+      name,
+      workspaceId,
+      assigneeId,
+      projectId,
+      dueDate,
+      status,
+      position,
+    };
+
+    try {
+      await createTask(tasks, request);
+      return redirect(
+        `/workspaces/${workspaceId}/projects/${projectId}?success=Task%20created`
+      );
+    } catch (error) {
+      console.error("Error creating project:", error);
+      return json({ error: error.message }, { status: 400 });
+    }
   }
-
-  try {
-    await createTask(tasks, request);
-    return redirect(`/workspaces/${workspaceId}/projects/${projectId}`);
-  } catch (error) {
-    console.error("Error creating project:", error);
-    return json({ error: error.message }, { status: 400 });
-  }
-  }
-
 
   if (form.get("_method") === "DELETE") {
     const taskId = form.get("taskId");
     try {
-      await deleteTask(Number(taskId), request); 
-      return redirect(`/workspaces/${workspaceId}/projects/${projectId}`);
+      await deleteTask(Number(taskId), request);
+      return redirect(
+        `/workspaces/${workspaceId}/projects/${projectId}?success=Task%20deleted`
+      );
     } catch (error) {
       console.error("Error deleting task:", error);
       return json({ error: "Failed to delete task" }, { status: 500 });
@@ -91,9 +127,8 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   }
 
   if (form.get("_method") === "PATCH") {
-    const taskId = form.get("taskId")
-    try{
-
+    const taskId = form.get("taskId");
+    try {
       const name = form.get("updateTaskName");
       const date = form.get("updateDueDate");
       const dueDateObj = new Date(date);
@@ -101,41 +136,63 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
       const projectId = Number(form.get("UpdateProjectId"));
       const status = form.get("UpdateStatus");
       const assigneeId = Number(form.get("assigneeId"));
-      
+
       const updateTaskData = {
         name,
         projectId,
         assigneeId,
         dueDate,
         status,
-      }
+      };
 
-      if(updateTaskData.name !== undefined && projectId !== 0 && assigneeId !== 0){
+      if (
+        updateTaskData.name !== undefined &&
+        projectId !== 0 &&
+        assigneeId !== 0
+      ) {
         await updateTask(Number(taskId), updateTaskData, request);
-        return redirect(`/workspaces/${workspaceId}/projects/${projectId}`);
+        return redirect(
+          `/workspaces/${workspaceId}/projects/${projectId}?success=Task%20updated`
+        );
       }
       return redirect(`/workspaces/${workspaceId}/projects/${projectId}`);
-      
-    }catch(error){
+    } catch (error) {
       console.error("Error updating task:", error);
       return json({ error: "Failed to delete task" }, { status: 500 });
     }
   }
-
 };
 
 const ProjectId = () => {
   const userData = useLoaderData();
-  const { projects, members, tasks } = useLoaderData();
-  const {workspaceId} = useParams();
-  const filteredTasks = tasks.filter(task => task.workspaceId === Number(workspaceId));
+  const { projects, tasks, successMessage } = useLoaderData();
+  const { workspaceId } = useParams();
+  const filteredTasks = tasks.filter(
+    (task) => task.workspaceId === Number(workspaceId)
+  );
   const { projectId } = useParams();
   const id = Number(projectId);
 
   const project = projects.find((proj) => proj.id === id);
+  
+  useEffect(() => {
+    if (successMessage) {
+      toast.success(successMessage);
+  
+      // Create a URL object using the current window location
+      const currentUrl = new URL(window.location.href);
+      
+      // Remove the 'success' query parameter
+      currentUrl.searchParams.delete('success');
+      
+      // Replace the current URL in the browser's history without reloading the page
+      window.history.replaceState({}, '', currentUrl.toString());
+    }
+  }, [successMessage]);
+  
   return (
     <div className="flex flex-col gap-y-4">
-      <Analytics  /> 
+      <Analytics />
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-x-2">
           <ProjectAvatar

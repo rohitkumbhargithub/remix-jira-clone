@@ -1,11 +1,10 @@
-import { ImageIcon } from "lucide-react";
 import { useRef, useState, useEffect } from "react";
 import { Form, useNavigation } from "@remix-run/react";
 import { toast } from "sonner";
-import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
-import { DottedSperator } from "~/componets/ui/dotted-speartar";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
+import { ImageIcon } from "lucide-react";
+import { DottedSperator } from "~/componets/ui/dotted-speartar";
 
 type CreateWorkspaceFormProps = {
   onCancel: () => void;
@@ -19,25 +18,20 @@ export const CreateWorkspaceForm = ({
   const inputRef = useRef(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [workspaceName, setWorkspaceName] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false); // Track form submission state
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const navigation = useNavigation();
   const isPending = navigation.state === "submitting";
 
-  try {
-    useEffect(() => {
-      if (navigation.state === "idle" && isSubmitted) {
-        setImagePreview(null);
-        setWorkspaceName("");
-        setIsSubmitted(false);
+  useEffect(() => {
+    if (navigation.state === "idle" && isSubmitted) {
+      setImagePreview(null);
+      setWorkspaceName("");
+      setIsSubmitted(false);
 
-        if (inputRef.current) {
-          inputRef.current.value = "";
-        }
-      }
-    }, [navigation.state, isSubmitted]);
-  } catch (error) {
-    toast.error("Error to create Workspace!");
-  }
+      // Close the modal after submission
+      onCancel();  // This closes the modal
+    }
+  }, [navigation.state, isSubmitted, onCancel]);
 
   const [uploaded, setUploaded] = useState(false);
   const handleUpload = (event) => {
@@ -46,17 +40,17 @@ export const CreateWorkspaceForm = ({
       setImagePreview(URL.createObjectURL(file));
     }
     if (event.target.files && event.target.files.length > 0) {
-      setUploaded(true); // Set uploaded to true when file is selected
+      setUploaded(true);
     }
   };
 
   const handleButtonClick = () => {
     if (uploaded) {
-      setUploaded(false); // Remove image and reset input
+      setUploaded(false);
       setImagePreview(null);
       if (inputRef.current) inputRef.current.value = null;
     } else {
-      inputRef.current?.click(); // Open file dialog
+      inputRef.current?.click();
     }
   };
 
@@ -151,7 +145,7 @@ export const CreateWorkspaceForm = ({
               variant="secondary"
               size="lg"
               onClick={onCancel}
-              className={cn(onCancel ? "visible" : "invisible")}
+              className="visible"
               disabled={isPending}
             >
               Cancel
@@ -162,6 +156,7 @@ export const CreateWorkspaceForm = ({
               name="My Workspace"
               size="lg"
               disabled={isPending}
+              onClick={() => setIsSubmitted(true)} 
             >
               Create Workspace
             </Button>

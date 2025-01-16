@@ -36,7 +36,6 @@ export const loader: LoaderFunction = async ({ request, params }) => {
     failureRedirect: "/sign-in",
   });
 
-
   const workspaceId = params.workspaceId;
   const projectId = params.projectId;
   const projects = await getProjectsByWorkspace(request, Number(workspaceId));
@@ -53,16 +52,16 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
   if (deleteAction === "delete") {
     try {
       await DeleteProject(Number(projectId), request);
-      return redirect(`/workspaces/${workspaceId}`);
+      return redirect(`/workspaces/${workspaceId}?success=Project%20deleted`);
     } catch (error) {
       return json({ error: "Failed to delete project." }, { status: 400 });
     }
   }
 
-  if(form.get("_method") === "DELETE"){
-        const removeImageId = form.get("remove-image");
-        const workspaceId = form.get("workspaceId");
-        await removeImage(request, Number(workspaceId) ,Number(removeImageId));
+  if (form.get("_method") === "DELETE") {
+    const removeImageId = form.get("remove-image");
+    const workspaceId = form.get("workspaceId");
+    await removeImage(request, Number(workspaceId), Number(removeImageId));
   }
 
   let imageUrl = form.get("img");
@@ -87,13 +86,13 @@ export const action = async ({ request, params }: ActionFunctionArgs) => {
 
     const formData = await parseMultipartFormData(request, uploadHandler);
     imageUrl = formData.get("img");
-  } 
+  }
 
   const project = { name, imageUrl };
 
   try {
     await UpdateProject(project, projectId, request);
-    return redirect(`/workspaces/${workspaceId}/projects/${projectId}`);
+    return redirect(`/workspaces/${workspaceId}/projects/${projectId}?success=Project%20Updated`);
   } catch (error) {
     return json({ error: error.message }, { status: 400 });
   }

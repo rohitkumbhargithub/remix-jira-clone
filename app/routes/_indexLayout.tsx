@@ -1,10 +1,10 @@
+import { Outlet, Params, useLoaderData, useNavigate } from "@remix-run/react";
 import { CreateWorkspaceModal } from "~/workspaces/create-workspace-modal";
-import { Outlet, useLoaderData, useNavigate } from "@remix-run/react";
 import { MetaFunction } from "@remix-run/node";
 import { Nav } from "~/componets/nav";
 import { Sidebar } from "~/componets/sidebar";
 import { getAllMemeber, getMemeberByWorkspace } from "~/utils/workspace.server";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { getUserSession } from "~/utils/session.server";
 import { CreateProjectModal } from "~/projects/context/create-project-modal";
 import { getProjects, getProjectsByWorkspace } from "~/utils/project.server";
@@ -17,7 +17,7 @@ export const meta: MetaFunction = () => {
   ];
 };
 
-export const loader = async ({ request, params }) => {
+export const loader = async ({ request, params } : {request : Request, params: Params}) => {
   await authenticator.isAuthenticated(request, {
     failureRedirect: "/sign-in",
   });
@@ -52,7 +52,7 @@ export const loader = async ({ request, params }) => {
 };
 
 export default function IndexLayout() {
-  const { workspaceId, projects, workspacesByMembers, workspaces, getAllProjects } =
+  const { workspaceId, workspaces, getAllProjects } =
     useLoaderData() || {};
 
   const navigate = useNavigate();

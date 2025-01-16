@@ -15,7 +15,7 @@ export const CreateWorkspaceModal = () => {
   };
 
   return (
-    <ResponsiveModal open={modal}>
+    <ResponsiveModal open={isModalOpen}>
       <Modal isOpen={modal} onClose={handleCloseModal} />
     </ResponsiveModal>
   );

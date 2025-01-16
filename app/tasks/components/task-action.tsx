@@ -67,7 +67,7 @@ export const TaskActions = ({ id, projectId, children }: TaskActionProps) => {
       method: "POST",
       body: formData,
     });
-    navigate(`/workspaces/${workspaceId}/projects/${projectId}`);
+    navigate(`/workspaces/${workspaceId}/projects/${projectId}?success=Task%20deleted`);
   };
 
   const onOpenTask = () => {

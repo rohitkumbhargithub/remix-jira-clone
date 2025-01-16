@@ -1,11 +1,11 @@
 import UserButton from "~/componets/user-button";
 
-import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { Outlet, useLoaderData } from "@remix-run/react";
 import { getUserSession } from "~/utils/session.server";
 import { getAllMemeber } from "~/utils/workspace.server";
 import { authenticator } from "~/utils/auth.server";
 
-export const loader = async ({ request, params }) => {
+export const loader = async ({ request }: {request : Request}) => {
   await authenticator.isAuthenticated(request, {
     failureRedirect: "/sign-in",
   });
@@ -23,7 +23,6 @@ export const loader = async ({ request, params }) => {
 };
 
 const WorkspaceLayout = () => {
-  const { user, workspaces } = useLoaderData() || {};
   return (
     <main className="bg-neutral-100 min-h-screen">
       <div className="mx-auto max-w-screen-2xl p-4">
