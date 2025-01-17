@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@remix-run/react"
 import { Button } from "~/components/ui/button";
-import Logo from "~/componets/utils/logo.png"
+import Logo from "../utils/images/utils/logo.png"
 
 const Navbar = () => {
   const location = useLocation();
@@ -12,7 +12,7 @@ const Navbar = () => {
         <ul className="flex justify-between">
           <li className="ml-6">
             <Link className="text-blue-500 hover:text-blue-800" to="/">
-              <img src={Logo} width={40}/>
+              <img src={Logo} width={40} className="rounded-md"/>
             </Link>
           </li>
           <div className="flex justify-center">

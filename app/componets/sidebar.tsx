@@ -2,12 +2,12 @@ import { Navigation } from "./navigation";
 import { WorkspaceSwitcher } from "./workspace-switcher";
 import { DottedSperator } from "./ui/dotted-speartar";
 import Project from "./project";
-import JiraLogo from "../utils/images/utils/jira.svg";
+import JiraLogo from "../utils/images/utils/jira.png"
 
 export const Sidebar = ({ projects }) => {
   return (
     <aside className="h-full bg-neutral-100 p-4 w-full">
-      <img src={JiraLogo} alt="jira logo" className="object-cover mb-4" />
+      <img src={JiraLogo} alt="jira logo" className="object-cover mb-2 rounded-md" />
       <DottedSperator className="m-2" />
       <WorkspaceSwitcher />
       <DottedSperator className="m-2" />
