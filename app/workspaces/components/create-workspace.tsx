@@ -29,7 +29,7 @@ export const CreateWorkspaceForm = ({
       setIsSubmitted(false);
 
       // Close the modal after submission
-      onCancel();  // This closes the modal
+      // onCancel();  // This closes the modal
     }
   }, [navigation.state, isSubmitted, onCancel]);
 
