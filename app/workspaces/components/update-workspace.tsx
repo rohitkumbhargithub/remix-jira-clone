@@ -138,7 +138,7 @@ export const UpdateWorkspaceForm = ({
     }
   }, [fetcher.data]);
 
-  const fullInviteLink = `http://localhost:5173/workspaces/${initialValues}/join/${workspaceData.inviteCode}`;
+  const fullInviteLink = `https://remix-jira-clone.onrender.com/workspaces/${initialValues}/join/${workspaceData.inviteCode}`;
 
   return (
     <div className="flex flex-col gap-y-4">
