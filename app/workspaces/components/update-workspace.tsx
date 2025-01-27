@@ -11,12 +11,6 @@ import { useWorkspaceId } from "~/hooks/user-workspaceId";
 
 import { cn } from "~/lib/utils";
 
-export async function loader({ request }) {
-  const url = new URL(request.url);
-  const origin = url.origin;
-  return { origin };
-}
-
 type UpdateWorkspaceFormProps = {
   actionUrl: string;
 };
@@ -144,7 +138,7 @@ export const UpdateWorkspaceForm = ({
     }
   }, [fetcher.data]);
 
-  const fullInviteLink = `${origin}/workspaces/${initialValues}/join/${workspaceData.inviteCode}`;
+  const fullInviteLink = `http://localhost:5173/workspaces/${initialValues}/join/${workspaceData.inviteCode}`;
 
   return (
     <div className="flex flex-col gap-y-4">
